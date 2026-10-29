@@ -1,4 +1,4 @@
-# Model 1 Nowcasting: public results site
+# US Economy Nowcasting: public results site
 
 A static site (plain HTML, CSS and JavaScript, no build step) presenting the GDP nowcast and the
 industry models of the `m1dfm` project. Charts use Observable Plot and equations KaTeX, both from
