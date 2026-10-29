@@ -15,13 +15,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 function current(q) {
   const pts = q.dates.map((d, i) => ({ date: day(d), v: q.nowcast[i] }));
   const last = pts.at(-1);
-  const [year, n] = q.q.split("Q");
+  const [year, n] = q.q.split("Q").map(Number);
+  const qStart = new Date(year, (n - 1) * 3, 1, 12), qEnd = new Date(year, n * 3, 0, 12);   // first and last day
+  const month = (d) => d.toLocaleDateString("en-US", { month: "long" });
   document.getElementById("headline").innerHTML =
     `As of ${fmt.date(q.dates.at(-1))}, the model puts ${QUARTER_WORDS[n]}-quarter ${year} growth at ` +
-    `<strong>${fmt.n(last.v, 1)}%</strong> a year, up from ${fmt.n(pts[0].v, 1)}% when the first data for the quarter came in.`;
+    `<strong>${fmt.n(last.v, 1)}%</strong> a year, up from ${fmt.n(pts[0].v, 1)}% in ${month(pts[0].date)}` +
+    `${pts[0].date < qStart ? ", before the quarter began" : ""}.`;
 
+  const bounds = [{ date: qStart, label: "START OF QUARTER" }, { date: qEnd, label: "END OF QUARTER" }];
   const marks = [
     Plot.ruleY([0], { stroke: col("line") }),
+    Plot.ruleX(bounds, { x: "date", stroke: col("ink-3"), strokeDasharray: "3 3" }),
+    Plot.text(bounds, { x: "date", text: "label", frameAnchor: "top", dy: -14, dx: 4, textAnchor: "start",
+                        fill: col("ink-3"), fontSize: 10.5, fontWeight: 600 }),
     Plot.lineY(pts, { x: "date", y: "v", stroke: col("accent"), strokeWidth: 2 }),
     Plot.dot(pts, { x: "date", y: "v", fill: col("accent"), r: 3.5, tip: true,
                     title: (d) => `${fmt.date(d.date.toISOString().slice(0, 10))}: ${fmt.n(d.v, 2)}%` }),
@@ -34,14 +41,20 @@ function current(q) {
                                         dy: -7, textAnchor: "start", fill: col("ink-2") }));
   }
   mount("now-chart", Plot.plot({
-    width: W("now-chart"), height: 260, marginRight: 50, style: PLOT_STYLE,
-    x: { type: "time", label: null },
+    width: W("now-chart"), height: 280, marginTop: 34, marginRight: 50, style: PLOT_STYLE,
+    x: { type: "time", label: null, domain: [d3.min([pts[0].date, qStart]), d3.max([last.date, qEnd])] },
     y: { label: "GDP growth, % a year", grid: true, domain: [Math.min(0, ...pts.map((d) => d.v)) - 0.5, Math.max(...pts.map((d) => d.v)) + 0.7] },
     marks,
   }));
-  document.getElementById("now-caption").textContent = q.advance == null
-    ? `Weekly nowcast of real GDP growth for ${q.q}, at an annual rate. BEA had not yet published its first estimate at the last update.`
-    : `Weekly nowcast of real GDP growth for ${q.q}, at an annual rate. BEA's first estimate (dashed line) was ${fmt.n(q.advance, 1)}%.`;
+  document.getElementById("now-caption").textContent =
+    `Weekly nowcast of real GDP growth for ${q.q}, at an annual rate. ` +
+    (q.advance == null ? "BEA had not yet published its first estimate at the last update. "
+                       : `BEA's first estimate (dashed line) was ${fmt.n(q.advance, 1)}%. `) +
+    "The model starts tracking a quarter about a month before it begins, so the earliest points are really forecasts. " +
+    "Data released then still matter for two reasons. A quarter's growth is measured against the quarter before, so news " +
+    "about the previous quarter's months changes the starting level. And the economy has momentum: strong data for one " +
+    "quarter point to more growth in the next. Most of the movement comes later, as data for the quarter's own three months are " +
+    "released, during the quarter and in the month after it ends."
 }
 
 function accuracyStrip() {
