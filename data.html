@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data · Model 1 Nowcasting</title>
+<meta name="description" content="Every data series used by the GDP nowcast and the industry models, with links to FRED.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/common.js"></script>
+<script defer src="assets/data.js"></script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Model 1 <span>Nowcasting</span></a>
+  <nav class="main">
+    <a href="index.html">Home</a>
+    <a href="nowcast.html">GDP nowcast</a>
+    <a href="industries.html">Industry models</a>
+    <a href="structure.html">Model structure</a>
+    <a href="data.html">Data</a>
+    <a href="methods.html">Methods</a>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+  <h1>Data</h1>
+  <p class="lead">All the data are public, from the Federal Reserve Bank of St. Louis (FRED) and the agencies that
+    publish through it. This page lists every series the models use.</p>
+
+  <h2>Where the data come from</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Data set</th><th>What it is</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://www.stlouisfed.org/research/economists/mccracken/fred-databases" target="_blank" rel="noopener">FRED-MD</a></td>
+        <td>About 126 monthly US macro series (output, jobs, housing, orders, money, interest rates, prices, stock
+          prices), maintained by Michael McCracken and Serena Ng at the St. Louis Fed.</td>
+        <td>The general factors of every industry model.</td></tr>
+      <tr><td>FRED-MD vintages</td><td>326 monthly snapshots of FRED-MD, August 1999 to September 2026, each as it was published.</td>
+        <td>The real-time test: each forecast uses only the snapshot available at its date.</td></tr>
+      <tr><td>Industry series (FRED)</td><td>192 monthly series for 13 industries, none of them in FRED-MD: production,
+          capacity use, orders, shipments, sales, jobs and prices.</td><td>The industry models and the economy model.</td></tr>
+      <tr><td>GDP nowcast series (FRED)</td><td>35 monthly and quarterly series from the New York Fed's Staff Nowcast 2.0 list. Four Dallas and
+          Philadelphia Fed survey indexes stand in for the ISM surveys, which are not on FRED.</td>
+        <td>The GDP nowcast.</td></tr>
+      <tr><td><a href="https://alfred.stlouisfed.org/" target="_blank" rel="noopener">ALFRED</a></td>
+        <td>The St. Louis Fed's archive of every past release of a FRED series.</td>
+        <td>Real-time versions of the industry and GDP nowcast series. Where a series has no archive for a date, it is
+          left out (GDP nowcast) or cut off at that date (industry models, labeled "pseudo-real-time").</td></tr>
+      <tr><td>BEA GDP estimates</td><td>The advance (first), third and latest estimates of real GDP growth, from ALFRED.</td>
+        <td>The "truth" each GDP nowcast is scored against.</td></tr>
+      <tr><td>New York Fed Nowcasting Reports</td><td>The nowcasts the New York Fed published weekly, 2016–2019.</td>
+        <td>A head-to-head comparison with our replica.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">This site shows model results and series descriptions only. For the data values themselves,
+    follow the links to FRED.</p>
+
+  <h2>Every series</h2>
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search names or IDs (e.g. steel, PAYEMS)" aria-label="Search series">
+    <label for="f-src">Source</label>
+    <select id="f-src"><option value="">All</option></select>
+    <label for="f-used">Used in</label>
+    <select id="f-used"><option value="">Both models</option><option>GDP nowcast</option><option>Model 1</option></select>
+    <span class="muted small" id="count"></span>
+  </div>
+  <div class="table-wrap" style="max-height: 70vh"><table id="tbl"></table></div>
+  <details class="deep">
+    <summary><span class="kicker">For economists</span>Transformations</summary>
+    <p>Industry models follow FRED-MD's transformation codes: "growth rate" is the change in the log, "change in growth
+      rate" the second difference of the log (FRED-MD's default for prices), "change" the first difference. Every series
+      is then standardized. The GDP nowcast follows the New York Fed's Table 1: monthly % changes or changes, survey
+      indexes in levels, quarterly series as % changes at an annual rate.</p>
+  </details>
+</div></main>
+
+<footer class="site"><div class="wrap">
+  Model 1 Nowcasting · series descriptions from FRED-MD's appendix and FRED.
+</div></footer>
+</body>
+</html>

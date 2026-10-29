@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Structure · Model 1 Nowcasting</title>
+<meta name="description" content="The hidden factors of the GDP nowcast and the industry models, and which data series each one explains.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+<script defer src="assets/common.js"></script>
+<script defer src="assets/structure.js"></script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Model 1 <span>Nowcasting</span></a>
+  <nav class="main">
+    <a href="index.html">Home</a>
+    <a href="nowcast.html">GDP nowcast</a>
+    <a href="industries.html">Industry models</a>
+    <a href="structure.html">Model structure</a>
+    <a href="data.html">Data</a>
+    <a href="methods.html">Methods</a>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+  <h1>Model structure</h1>
+  <p class="lead">Both models explain many data series with a few hidden <strong>factors</strong>. This page shows
+    what each factor stands for and which series it drives.</p>
+  <div class="prose">
+    <p>Think of a factor as a hidden index, like an unpublished "state of the economy" number. Each data series is
+      modeled as a mix of a few factors plus noise of its own. A series' <strong>loading</strong> on a factor is how
+      strongly it moves with that factor. The models only allow the loadings that make economic sense: a jobs series
+      can load on the labor factor, a steel series on the steel factor, and so on.</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button data-tab="gdp" role="tab">GDP nowcast model</button>
+    <button data-tab="m1" role="tab">Industry (economy) model</button>
+  </div>
+
+  <section id="gdp">
+    <div class="prose">
+      <p>The GDP nowcast model has 35 series and six hidden components:</p>
+      <ul>
+        <li><strong>Trend</strong>: the economy's long-run growth rate, which drifts slowly. Only GDP and GDI load on it.</li>
+        <li><strong>Global</strong>: the overall pace of real activity. Almost every series loads on it.</li>
+        <li><strong>Soft</strong>: business sentiment, from regional Fed manufacturing and services surveys.</li>
+        <li><strong>Nominal</strong>: prices and series measured in dollars.</li>
+        <li><strong>Labor</strong>: the job market.</li>
+        <li><strong>COVID</strong>: a factor that exists only from March to September 2020, to absorb the pandemic's extreme swings.</li>
+      </ul>
+      <p>Bars show the estimated loading of each series on each factor (posterior mean, standardized data). Blue bars
+        move with the factor, red bars against it. An empty cell means the model does not allow that loading.</p>
+    </div>
+    <p class="small muted" id="gdp-fit"></p>
+    <div class="table-wrap"><table class="matrix" id="gdp-matrix"></table></div>
+  </section>
+
+  <section id="m1" hidden>
+    <div class="prose">
+      <p>The economy model has 243 monthly series: 126 national series from FRED-MD and 117 activity series from 13
+        industries. It has 17 factors: 4 economy-wide ones and one for each industry. The economy-wide factors are
+        statistical constructs; their names come from the series each one explains best.</p>
+    </div>
+
+    <h2>What one factor explains</h2>
+    <div class="controls">
+      <label for="f-select">Factor</label>
+      <select id="f-select"></select>
+    </div>
+    <figure class="chart">
+      <p class="chart-title" id="f-title"></p>
+      <p class="chart-sub">Share of each series' month-to-month variation explained by this factor (top 20 series)</p>
+      <div class="plot" id="f-bars"></div>
+    </figure>
+    <figure class="chart">
+      <p class="chart-title" id="f-hist-title"></p>
+      <p class="chart-sub">Estimated factor value each month, standard deviations; grey bands are recessions</p>
+      <div class="plot" id="f-hist"></div>
+      <figcaption>Estimated on the September 2026 data vintage (1959–2026). The factor's sign is arbitrary: it is fixed so
+        that a chosen anchor series loads positively.</figcaption>
+    </figure>
+
+    <h2>How much the factors explain, series by series</h2>
+    <div class="controls">
+      <label for="g-select">Group</label>
+      <select id="g-select"></select>
+    </div>
+    <figure class="chart">
+      <p class="chart-sub">Share of each series' monthly variation explained by the economy-wide factors and by its own
+        industry's factor. The rest is noise specific to the series.</p>
+      <div class="legend" id="g-legend"></div>
+      <div class="plot" id="g-bars"></div>
+    </figure>
+
+    <h2>How the factors relate to each other</h2>
+    <figure class="chart">
+      <p class="chart-title">Industry factors are nearly uncorrelated with each other</p>
+      <p class="chart-sub">Correlation of monthly factor values, 2000–2026 excluding March–December 2020</p>
+      <div class="plot" id="corr"></div>
+      <figcaption>Blue: move together; orange: move oppositely; pale: unrelated. The few strong pairs make economic sense:
+        energy and chemicals (oil and gas are chemical feedstocks), energy and retail (gas-station sales are part of
+        retail), autos and retail (car dealers), transport and leisure (travel). So each industry factor carries
+        information the others do not.</figcaption>
+    </figure>
+  </section>
+</div></main>
+
+<footer class="site"><div class="wrap">
+  Model 1 Nowcasting · statistical research models, not official forecasts.
+</div></footer>
+</body>
+</html>

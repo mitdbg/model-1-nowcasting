@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methods · Model 1 Nowcasting</title>
+<meta name="description" content="How the models are tested in real time, how accuracy is scored, related work, caveats and a glossary.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/common.js"></script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Model 1 <span>Nowcasting</span></a>
+  <nav class="main">
+    <a href="index.html">Home</a>
+    <a href="nowcast.html">GDP nowcast</a>
+    <a href="industries.html">Industry models</a>
+    <a href="structure.html">Model structure</a>
+    <a href="data.html">Data</a>
+    <a href="methods.html">Methods</a>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+  <h1>Methods</h1>
+  <p class="lead">How the models are tested, what the scores mean, how this work relates to the models the Federal
+    Reserve publishes, and what to be careful about.</p>
+  <nav class="toc">
+    <a href="#realtime">Testing in real time</a>
+    <a href="#scores">Scoring accuracy</a>
+    <a href="#related">Related work</a>
+    <a href="#caveats">Caveats</a>
+    <a href="#glossary">Glossary</a>
+  </nav>
+
+  <h2 id="realtime">Testing in real time</h2>
+  <div class="prose">
+    <p>Economic data are revised, often a lot. The first estimate of a month's payroll gain is routinely
+      revised by tens of thousands of jobs, and GDP growth by a point or more. A model tested on today's revised data would look better than it could
+      ever have been in practice, because it would be using information nobody had at the time.</p>
+    <p>So every result on this site comes from a <strong>real-time backtest</strong>. We step through history one
+      forecast date at a time. At each date we take the data exactly as they had been published by then, fit the model
+      on those data alone, and record its forecast. Only later is the forecast compared with what actually happened.</p>
+  </div>
+  <figure class="chart">
+    <svg viewBox="0 0 760 170" role="img" aria-label="Timeline of one real-time forecast" style="width:100%;max-width:760px">
+      <rect x="30" y="66" width="400" height="28" rx="5" fill="#2563c9" fill-opacity=".18"/>
+      <text x="230" y="85" text-anchor="middle" font-size="13" fill="currentColor">data published by the forecast date (as first released)</text>
+      <line x1="430" y1="48" x2="430" y2="112" stroke="#2563c9" stroke-width="2.5"/>
+      <text x="430" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#2563c9">forecast date</text>
+      <text x="430" y="132" text-anchor="middle" font-size="12" fill="currentColor" fill-opacity=".7">fit the model, record the forecast</text>
+      <rect x="430" y="66" width="140" height="28" rx="5" fill="currentColor" fill-opacity=".07"/>
+      <text x="500" y="85" text-anchor="middle" font-size="13" fill="currentColor" fill-opacity=".75">not yet known</text>
+      <line x1="640" y1="48" x2="640" y2="112" stroke="currentColor" stroke-width="2"/>
+      <text x="640" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">truth published</text>
+      <text x="640" y="132" text-anchor="middle" font-size="12" fill="currentColor" fill-opacity=".7">score the forecast</text>
+      <text x="30" y="160" font-size="12" fill="currentColor" fill-opacity=".6">Repeat for every week (GDP nowcast) or month (industry models) from 2000 or 2006 to 2026.</text>
+    </svg>
+  </figure>
+  <div class="prose">
+    <ul>
+      <li><strong>GDP nowcast</strong>: a nowcast every Friday for 82 quarters, 2006Q2 to 2026Q3, with the model re-estimated on
+        the first Wednesday of each quarter. Scored at 56, 28 and 1 day before BEA's first estimate, as in the New York
+        Fed's own evaluation.</li>
+      <li><strong>Industry models</strong>: a forecast every month from January 2000 to September 2026 (321 forecast dates),
+        0 to 12 months ahead. Model choices (the number of factors and lags) were made on 2000–2012 only and then kept fixed.</li>
+      <li><strong>Data vintages</strong>: the FRED-MD snapshot of each month, and ALFRED's archive of past releases for
+        other series. Where no archive exists for a date, the GDP nowcast leaves the value out and the industry models
+        use today's data cut off at that date, labeled "pseudo-real-time".</li>
+    </ul>
+  </div>
+
+  <h2 id="scores">Scoring accuracy</h2>
+  <div class="prose">
+    <p><strong>Mean squared error (MSE)</strong> averages the squared forecast misses. Squaring makes large misses count more,
+      and keeps positive and negative misses from cancelling. For GDP, the misses are in percentage points of annualized
+      growth, so an MSE of 1.4 means a typical miss of about \(\sqrt{1.4} \approx 1.2\) points.</p>
+    <p><strong>Relative error</strong> divides a model's root mean squared error by the benchmark's. 0.90 means errors 10%
+      smaller than the benchmark; above 1 means worse. The site shows this as "10% better".</p>
+    <p><strong>The benchmark</strong> is an autoregression (AR): a forecast of a series from its own recent past alone. It is
+      simple but hard to beat, especially in calm periods.</p>
+    <p><strong>p-values</strong> come from Diebold–Mariano tests of whether two forecasts are equally accurate. A p-value
+      below 0.05 means a difference that large would rarely arise by chance. With only a few recessions in the test
+      periods, most differences between good models are not statistically significant.</p>
+    <p><strong>What counts as the truth</strong>: for GDP, BEA's first (advance) estimate, its third estimate, or the latest
+      revised figure; for monthly indicators, the first release or the latest vintage. Results can differ by truth: a
+      model that predicts first releases well need not predict the revised figures as well.</p>
+  </div>
+  <details class="deep">
+    <summary><span class="kicker">For economists</span>Formulas</summary>
+    $$\text{MSE} = \frac{1}{N}\sum_{q=1}^{N} \big(\hat y_{q \mid t} - y_q\big)^2, \qquad
+      \text{relative RMSE} = \frac{\sqrt{\text{MSE}_{\text{model}}}}{\sqrt{\text{MSE}_{\text{AR}}}}$$
+    <p>Diebold–Mariano statistics use the squared-error loss differential with a Newey–West variance and the
+      Harvey–Leybourne–Newbold small-sample correction. Industry-model scores are on cumulative changes over the
+      horizon. Error bands are scored by coverage: the share of outcomes inside the model's 68% band.</p>
+  </details>
+
+  <h2 id="related">Related work</h2>
+  <div class="prose">
+    <p>Both models belong to the family of factor-model nowcasts that several Federal Reserve Banks publish. They are a
+      different kind of tool from the Board's structural models, which exist to analyze policy rather than to track data.</p>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Model</th><th>Institution</th><th>Method</th><th>How it compares with this work</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://www.newyorkfed.org/research/policy/nowcast" target="_blank" rel="noopener">Staff Nowcast 2.0</a> (2023)</td><td>New York Fed</td>
+        <td>Bayesian dynamic factor model with a trend, stochastic volatility and outlier adjustment; 35 series from 1985</td>
+        <td>Our GDP nowcast replicates it on free data, with regional Fed surveys in place of the ISM indexes and our own priors.</td></tr>
+      <tr><td><a href="https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr830.pdf" target="_blank" rel="noopener">Legacy Staff Nowcast</a> (2016–2021)</td><td>New York Fed</td>
+        <td>Dynamic factor model with global, soft, real and labor factors, estimated by EM (Bok et al. 2018)</td>
+        <td>The first stage of our GDP work, and the same estimation method as the industry models.</td></tr>
+      <tr><td><a href="https://www.atlantafed.org/cqer/research/gdpnow" target="_blank" rel="noopener">GDPNow</a></td><td>Atlanta Fed</td>
+        <td>Bridge equations for 13 GDP components, with a factor model filling in unpublished months</td>
+        <td>Builds GDP up from its parts instead of reading hidden factors. Not yet compared with ours.</td></tr>
+      <tr><td><a href="https://www.chicagofed.org/research/data/cfnai/current-data" target="_blank" rel="noopener">CFNAI</a></td><td>Chicago Fed</td>
+        <td>First principal component of 85 monthly activity indicators</td>
+        <td>An index of current activity, essentially the activity factor of our industry models on its own.</td></tr>
+      <tr><td><a href="https://www.federalreserve.gov/econres/us-models-about.htm" target="_blank" rel="noopener">FRB/US</a>, EDO and SIGMA</td><td>Federal Reserve Board</td>
+        <td>Structural models of how households, firms and markets behave</td>
+        <td>They can answer "what if the Fed raises rates?"; our statistical models cannot.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose">
+    <p><strong>Methods we build on</strong>: FRED-MD (McCracken and Ng 2016) with its transformation codes and outlier rule;
+      factor models estimated by EM with the Kalman smoother on data with gaps (Bańbura and Modugno 2014); the
+      diffusion-index forecasts of Stock and Watson (2002); mixed-frequency aggregation (Mariano and Murasawa 2003);
+      stochastic volatility sampled as in Kim, Shephard and Chib (1998) with the mixture of Omori et al. (2007); and
+      the Staff Nowcast 2.0 paper itself (Almuzara, Baker, O'Keeffe and Sbordone 2023).</p>
+  </div>
+
+  <h2 id="caveats">Caveats</h2>
+  <div class="prose">
+    <ul>
+      <li><strong>Few recessions.</strong> Most gains are consistent in sign but not statistically significant, because the test
+        periods contain few downturns.</li>
+      <li><strong>The GDP nowcast's lead</strong> over our older-model replica is not significant, and its lead over the New York
+        Fed's published nowcasts holds only against BEA's first estimate.</li>
+      <li><strong>Error bands</strong> of the GDP nowcast are too wide before the pandemic (the 68% band covers 80% of outcomes)
+        and too narrow after it.</li>
+      <li><strong>Priors are our own</strong>, since the Staff Nowcast 2.0 paper does not publish its values. The trend's
+        flexibility in particular is set by our prior, not by the data.</li>
+      <li><strong>Post-pandemic results</strong> rest on only 10 quarters.</li>
+      <li><strong>Industry models</strong>: gains over the AR on national indicators are 2–5% and mostly significant only at the
+        10% level. Industry price forecasts need the plain growth-rate transformation to beat the AR.</li>
+      <li>These are research models, not official forecasts of any institution.</li>
+    </ul>
+  </div>
+
+  <h2 id="glossary">Glossary</h2>
+  <div class="table-wrap"><table>
+    <tbody>
+      <tr><td><strong>Nowcast</strong></td><td>An estimate of the present or the very recent past, for a figure not yet published.</td></tr>
+      <tr><td><strong>Factor</strong></td><td>A hidden variable that many data series move with, estimated from the data.</td></tr>
+      <tr><td><strong>Loading</strong></td><td>How strongly a series moves with a factor.</td></tr>
+      <tr><td><strong>Advance estimate</strong></td><td>BEA's first estimate of a quarter's GDP, about a month after the quarter ends.</td></tr>
+      <tr><td><strong>Vintage</strong></td><td>The version of a data set as it was published on a given date.</td></tr>
+      <tr><td><strong>News</strong></td><td>The part of a data release the model did not expect: actual minus expected value.
+        Each release moves the nowcast by its news times a weight.</td></tr>
+      <tr><td><strong>Horizon</strong></td><td>How far ahead a forecast is: months ahead, or weeks before the GDP release.</td></tr>
+      <tr><td><strong>AR benchmark</strong></td><td>A forecast of a series from its own recent past only.</td></tr>
+      <tr><td><strong>Annualized growth</strong></td><td>A quarter's growth rate expressed as if it continued for a whole year
+        (roughly four times the quarterly rate).</td></tr>
+      <tr><td><strong>Stochastic volatility</strong></td><td>Shock sizes that change over time instead of being fixed.</td></tr>
+      <tr><td><strong>Real-time backtest</strong></td><td>Replaying history using only the data available at each date.</td></tr>
+    </tbody>
+  </table></div>
+</div></main>
+
+<footer class="site"><div class="wrap">
+  Model 1 Nowcasting · statistical research models, not official forecasts.
+</div></footer>
+</body>
+</html>

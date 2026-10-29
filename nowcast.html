@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GDP Nowcast · Model 1 Nowcasting</title>
+<meta name="description" content="Weekly nowcasts of US real GDP growth from a replica of the New York Fed Staff Nowcast 2.0, 2006-2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+<script defer src="assets/common.js"></script>
+<script defer src="assets/nowcast.js"></script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Model 1 <span>Nowcasting</span></a>
+  <nav class="main">
+    <a href="index.html">Home</a>
+    <a href="nowcast.html">GDP nowcast</a>
+    <a href="industries.html">Industry models</a>
+    <a href="structure.html">Model structure</a>
+    <a href="data.html">Data</a>
+    <a href="methods.html">Methods</a>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+  <h1>The GDP nowcast</h1>
+  <p class="lead">An estimate of the current quarter's real GDP growth, updated every Friday from the economic data
+    published that week. The model is our replica of the New York Fed's <em>Staff Nowcast 2.0</em>, rebuilt from
+    public data.</p>
+  <nav class="toc">
+    <a href="#history">Every quarter, week by week</a>
+    <a href="#quarter">Explore one quarter</a>
+    <a href="#accuracy">How accurate is it?</a>
+    <a href="#ingredients">What makes it work</a>
+    <a href="#model">The model in detail</a>
+  </nav>
+
+  <div class="prose">
+    <p><strong>How it works, in brief.</strong> Many statistics rise and fall together because they respond to the
+      same few forces: the overall pace of the economy, business sentiment, prices and the job market. The model
+      treats these forces as hidden variables (<em>factors</em>), estimates them from 35 monthly and quarterly
+      data series, and reads GDP growth off them. Each week it updates the factors with that week's releases, and
+      each data release moves the nowcast in proportion to how much it <em>surprised</em> the model.</p>
+    <p>Every nowcast on this page uses only the data that had been published by its date, including the
+      unrevised first versions of each figure. That is the honest test of how the model would have done in real time.</p>
+  </div>
+
+  <h2 id="history">Every quarter, week by week</h2>
+  <div class="controls">
+    <label>Period</label>
+    <div class="seg" id="hist-period">
+      <button value="2006-2015">2006–2015</button><button value="2016-2026">2016–2026</button><button value="all">All</button>
+    </div>
+    <label>True GDP</label>
+    <div class="seg" id="hist-truth">
+      <button value="advance">First estimate</button><button value="latest">Latest revised</button>
+    </div>
+  </div>
+  <figure class="chart">
+    <p class="chart-title">Each quarter's nowcast closes in on GDP as the data arrive</p>
+    <div class="legend">
+      <span><i style="background:#2563c9;opacity:.55"></i>weekly nowcast, one line per quarter</span>
+      <span><i class="dot" style="background:var(--truth)"></i>true GDP growth, at its first release date</span>
+    </div>
+    <div class="plot" id="hist-chart"></div>
+    <figcaption>Real GDP growth, % at an annual rate. Each light line runs from about five months before a
+      quarter's first official estimate to the day before it. The axis is cut at ±9%, so 2020's swings
+      (−33% and +33%) run off the chart. Hover over a line or dot for its quarter.</figcaption>
+  </figure>
+  <p class="prose" id="hist-note"></p>
+
+  <h2 id="quarter">Explore one quarter</h2>
+  <div class="controls">
+    <label for="q-select">Quarter</label>
+    <select id="q-select"></select>
+    <span class="muted small" id="q-summary"></span>
+  </div>
+  <figure class="chart">
+    <p class="chart-title" id="q-title"></p>
+    <div class="legend" id="q-legend"></div>
+    <div class="plot" id="q-path"></div>
+  </figure>
+  <figure class="chart">
+    <p class="chart-title">What moved the nowcast each week</p>
+    <p class="chart-sub">Change in the nowcast, percentage points, split by the kind of data released that week</p>
+    <div class="legend" id="q-news-legend"></div>
+    <div class="plot" id="q-news"></div>
+    <figcaption>Bars above zero pushed the nowcast up, bars below pushed it down. "Data revisions" are changes
+      to figures already published; "re-estimation" is the effect of re-fitting the model each quarter and of
+      updating its volatility and outlier estimates.</figcaption>
+  </figure>
+  <h3>The biggest surprises this quarter</h3>
+  <p class="small muted prose">Actual and expected values are in the units the model uses: % changes for most series,
+    changes in thousands for payrolls, index levels for surveys. Each surprise (actual minus expected) moves the nowcast
+    by a weight the model estimates for that series and release; the weight can be positive or negative.</p>
+  <div class="table-wrap"><table id="q-top"></table></div>
+
+  <h2 id="accuracy">How accurate is it?</h2>
+  <div class="prose">
+    <p>We score the nowcast by its <strong>mean squared error</strong> (MSE): the average of the squared
+      misses, in percentage points of annualized growth. An MSE of 1.4 means a typical miss of about 1.2 points.
+      Lower is better. The yardstick is a simple <strong>autoregressive (AR) benchmark</strong>, which
+      forecasts GDP growth from its own past alone.</p>
+  </div>
+  <figure class="chart">
+    <p class="chart-title">The error falls by two-thirds as the quarter's data arrive</p>
+    <p class="chart-sub">Mean squared error against BEA's first estimate, 55 quarters 2006Q2–2019Q4</p>
+    <div class="legend">
+      <span><i style="background:#2563c9"></i>our 2.0 replica, every week</span>
+      <span><i class="ring"></i>New York Fed 2.0, as published</span>
+      <span><i class="dot" style="background:#9aa1ad"></i>our replica of the older (2016–2021) New York Fed model</span>
+      <span><i style="background:#9aa1ad"></i>AR benchmark (dashed)</span>
+    </div>
+    <div class="plot" id="acc-horizon"></div>
+    <figcaption>Comparison points are scored 56, 28 and 1 days before release. The New York Fed figures come from
+      their own backtest (Almuzara et al. 2023, Table 2), not from our sample.</figcaption>
+  </figure>
+
+  <h3>Scores in full</h3>
+  <div class="controls">
+    <label>Compared with</label>
+    <div class="seg" id="acc-truth">
+      <button value="advance">First estimate</button><button value="third">Third estimate</button><button value="latest">Latest revised</button>
+    </div>
+    <label>Period</label>
+    <div class="seg" id="acc-span">
+      <button value="pre-pandemic">2006–2019</button><button value="post-pandemic">2020Q4–2023Q1</button><button value="total">All</button>
+    </div>
+  </div>
+  <div class="table-wrap"><table id="acc-table"></table></div>
+  <p class="small muted" id="acc-note"></p>
+
+  <h3>Against the nowcasts the New York Fed actually published</h3>
+  <div class="prose">
+    <p>From 2016 to 2019 the New York Fed published its (older) model's nowcast every week. On the same dates,
+      our replica had smaller errors against BEA's first estimate, with p-values near 0.05. Against the latest
+      revised GDP figures the difference disappears. These were calm years, and the simple AR benchmark did about as
+      well as either model.</p>
+  </div>
+  <div class="table-wrap"><table id="h2h-table"></table></div>
+
+  <h2 id="ingredients">What makes it work</h2>
+  <div class="prose">
+    <p>The 2.0 model adds four features to the older design. Switching each one off in turn shows which matter:
+      a slowly drifting <strong>trend</strong> in long-run growth, and <strong>outlier scales</strong> that stop a
+      single odd month from moving the estimate. With all four off, the model is no better than the older one.</p>
+  </div>
+  <figure class="chart">
+    <p class="chart-title">The trend and the outlier scales carry the gain</p>
+    <p class="chart-sub">Mean squared error against BEA's first estimate, 2006–2019, with one feature switched off at a time</p>
+    <div class="plot" id="abl-chart"></div>
+    <figcaption>The COVID factor exists only in 2020, so switching it off cannot change these quarters.
+      Stochastic volatility mainly changes the error bands, not the nowcast itself.</figcaption>
+  </figure>
+
+  <h2 id="model">The model in detail</h2>
+  <div class="prose">
+    <p>The model has four general factors (a <em>global</em> factor that every real-activity series loads on, and
+      factors for <em>surveys</em>, <em>nominal</em> series such as prices and dollar values, and <em>labor</em>),
+      a factor that exists only during the 2020 pandemic, and a slowly moving trend in long-run growth. The
+      <a href="structure.html#gdp">Model structure</a> page shows which series load on which factor.</p>
+  </div>
+
+  <details class="deep">
+    <summary><span class="kicker">For economists</span>Equations</summary>
+    <p>For a standardized monthly series \(i\):</p>
+    $$y_{it} = \iota_i\, g_t + \lambda_i' f_t + \lambda^c_i\, c_t + e_{it}$$
+    <p>Quarterly series (GDP, GDI, unit labor cost) are observed every third month as a weighted sum of the
+      unobserved monthly values (Mariano and Murasawa 2003):</p>
+    $$y^q_{it} = \tfrac{1}{9}\,(1, 2, 3, 2, 1) \cdot \big(\iota_i g + \lambda_i' f + e^q_i\big)_{t,\,t-1,\,\dots,\,t-4}$$
+    <p>The trend, the factors and the series-specific terms evolve as</p>
+    $$g_t = g_{t-1} + \gamma_g v_t, \qquad f_t = \sum_{l=1}^{4} \Phi_l f_{t-l} + s^f_t\, \sigma^f_t\, \varepsilon^f_t, \qquad e_{it} = \phi_i e_{i,t-1} + s^e_{it}\, \sigma^e_{it}\, \varepsilon_{it}$$
+    $$\ln (\sigma_t)^2 = \ln (\sigma_{t-1})^2 + \gamma\, \eta_t, \qquad s_t \in \{1, 2, 3, 4, 5\}, \qquad c_t = s^c_t\, \varepsilon^c_t \text{ in March–September 2020, else } 0$$
+    <ul>
+      <li>\(g_t\): trend in long-run growth, loading 1 on GDP and GDI only.</li>
+      <li>\(f_t\): global, soft, nominal and labor factors; every series loads on global except the price
+        indexes, and each also loads on its group's factor.</li>
+      <li>\(\sigma\) and \(s\): each shock has its own random-walk volatility and, each month, an outlier scale of 1 (usual) or 2–5.</li>
+    </ul>
+  </details>
+
+  <details class="deep">
+    <summary><span class="kicker">For economists</span>Estimation, data and departures from the paper</summary>
+    <ul>
+      <li><strong>Sampler</strong> (paper, appendix A): the state by the simulation smoother; loadings and AR
+        coefficients by Bayesian regression; the VAR kept stationary; volatilities by Kim, Shephard and Chib (1998)
+        with the 10-component mixture of Omori et al. (2007); outlier scales from their discrete posterior.
+        1,500 burn-in sweeps, 1,000 kept, thinned to 100 draws; about 11 minutes per fit.</li>
+      <li><strong>State</strong>: 45 elements (trend, 4 factors, COVID factor and 3 quarterly series-specific terms,
+        each with 5 lags). Monthly series-specific terms are quasi-differenced out of the state.</li>
+      <li><strong>Parameters</strong>: about 270, plus a volatility and an outlier scale for each of 39 shocks in every month.</li>
+      <li><strong>Backtest</strong>: re-estimated on the first Wednesday of each quarter on data from January 1985;
+        nowcast every Friday; the nowcast is the posterior mean over the kept draws.</li>
+      <li><strong>Data</strong>: the 35 series of the paper's list (the older model's list less capacity utilization
+        and the PPI), with Dallas and Philadelphia Fed survey indexes in place of the ISM indexes, which are not on FRED.
+        ALFRED vintages for every series that has them; values from before a series' archive begins are left out
+        unless the series is barely revised (surveys, price indexes).</li>
+      <li><strong>Departures</strong>: the paper does not publish its prior values, so ours are our own (loadings and
+        AR coefficients N(0, 1); trend volatility 0.025 with 1,000 prior observations, which the data barely move;
+        outlier probability about one month in 48). Price indexes do not load on the global factor, and quarterly
+        loadings are drawn with their series-specific terms integrated out; both were needed for the model to fit.
+        Standardization leaves out March–December 2020.</li>
+    </ul>
+  </details>
+
+  <details class="deep">
+    <summary><span class="kicker">For economists</span>Which data move the nowcast</summary>
+    <p>Average share of the absolute weekly news, by data category, compared with the New York Fed's reported shares.</p>
+    <div class="table-wrap"><table id="shares-table"></table></div>
+  </details>
+</div></main>
+
+<footer class="site"><div class="wrap">
+  Model 1 Nowcasting · statistical research models, not official forecasts. GDP figures from the US Bureau of Economic
+  Analysis via ALFRED; New York Fed comparisons from Almuzara, Baker, O'Keeffe and Sbordone (2023) and the
+  New York Fed's published Nowcasting Reports.
+</div></footer>
+</body>
+</html>

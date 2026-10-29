@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model 1 Nowcasting</title>
+<meta name="description" content="Statistical nowcasts of US GDP and forecasts of monthly and industry indicators, tested on the data available at each date.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+<script defer src="assets/common.js"></script>
+<script defer src="assets/home.js"></script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">Model 1 <span>Nowcasting</span></a>
+  <nav class="main">
+    <a href="index.html">Home</a>
+    <a href="nowcast.html">GDP nowcast</a>
+    <a href="industries.html">Industry models</a>
+    <a href="structure.html">Model structure</a>
+    <a href="data.html">Data</a>
+    <a href="methods.html">Methods</a>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+  <h1>Reading the US economy as its data come out</h1>
+  <p class="lead">This project builds statistical models that track the US economy from the stream of official
+    data releases: jobs, factory output, retail sales, surveys, prices and more. They estimate how fast the
+    economy is growing <em>right now</em>, before the official GDP figure is published, and forecast monthly
+    indicators for the whole economy and for 13 industries.</p>
+
+  <div class="grid three" id="stats" style="margin: 28px 0 8px">
+    <div class="stat"><div class="value" id="stat-now">…</div><div class="label" id="stat-now-label">Latest GDP nowcast</div></div>
+    <div class="stat"><div class="value">1.37</div><div class="label">Error of the GDP nowcast on the day before the first official estimate, 2006–2019 (New York Fed's own model: 1.3)</div></div>
+    <div class="stat"><div class="value">65%</div><div class="label">Smaller errors than a simple benchmark that only extrapolates past GDP growth</div></div>
+  </div>
+  <p class="small muted">Errors are mean squared errors in percentage points of annualized growth, squared; lower is better.
+    <a href="methods.html#scores">How we measure accuracy</a>.</p>
+
+  <h2>What is a nowcast?</h2>
+  <div class="prose">
+    <p>The government's first estimate of GDP growth for a quarter comes out about a month after the quarter ends.
+      In the meantime, dozens of monthly statistics are published, each telling us a little about how the quarter
+      is going. A <strong>nowcast</strong> combines them into a running estimate of the quarter's growth, updated
+      every week as new numbers arrive.</p>
+    <p>The chart below shows this for the current quarter. Each dot is one week's nowcast. Early on the model knows
+      little and stays close to normal growth; as reports come in, it moves toward what the data say.</p>
+  </div>
+  <figure class="chart">
+    <p class="chart-title" id="now-title">The current quarter</p>
+    <p class="chart-sub">Weekly nowcast of real GDP growth, % at an annual rate</p>
+    <div class="plot" id="now-chart"></div>
+    <figcaption id="now-caption"></figcaption>
+  </figure>
+
+  <h2>Two models</h2>
+  <div class="grid two">
+    <a class="card" href="nowcast.html">
+      <h3>The GDP nowcast</h3>
+      <p>A replica of the New York Fed's <em>Staff Nowcast 2.0</em>, built from 35 public data series. Tested
+        over 82 quarters on the data that were actually available each week, it is about as accurate as the New
+        York Fed reports for its own model.</p>
+      <span class="more">Explore the GDP nowcast →</span>
+    </a>
+    <a class="card" href="industries.html">
+      <h3>The industry models</h3>
+      <p>Forecasts of national monthly indicators and of 13 industries, from steel to health care, using
+        over 300 monthly series. Industry information gives small but steady gains, and large ones for trade
+        and freight.</p>
+      <span class="more">Explore the industry models →</span>
+    </a>
+  </div>
+
+  <h2>How to read this site</h2>
+  <div class="prose">
+    <p>Each page starts with a plain-language explanation and a few charts. Panels marked
+      <strong>For economists</strong> open up the equations, estimation details and full result tables.</p>
+    <ul>
+      <li><a href="nowcast.html">GDP nowcast</a>: every quarter's weekly nowcast against the official figures,
+        what moved each one, and how accurate it is.</li>
+      <li><a href="industries.html">Industry models</a>: forecast accuracy for national indicators and for each industry.</li>
+      <li><a href="structure.html">Model structure</a>: the hidden "factors" each model uses and which data
+        series they explain.</li>
+      <li><a href="data.html">Data</a>: a searchable list of every data series, with links to the source.</li>
+      <li><a href="methods.html">Methods</a>: how the models are tested, what the scores mean, related work and caveats.</li>
+    </ul>
+  </div>
+</div></main>
+
+<footer class="site"><div class="wrap">
+  Model 1 Nowcasting · statistical research models, not official forecasts. Data from FRED and ALFRED
+  (Federal Reserve Bank of St. Louis) and the US Bureau of Economic Analysis. Results as of the latest update shown on each page.
+</div></footer>
+</body>
+</html>
