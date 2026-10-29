@@ -170,3 +170,14 @@ details.deep[open] { padding-bottom: 12px; }
   .part, .part + .part { padding: 14px 0 4px; border-left: 0; }
   .part + .part { border-top: 1px solid var(--line); }
 }
+
+/* fan chart */
+.fan { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(240px, 1fr); gap: 18px; align-items: start; }
+.fan-side { padding-top: 6px; }
+.fan-table { font-size: 0.85rem; margin-top: 4px; }
+.fan-table td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.fan-table i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
+.fan-table i.diamond { width: 8px; height: 8px; background: var(--truth); transform: rotate(45deg); border-radius: 0; margin-left: 2px; }
+.fan.solo { grid-template-columns: 1fr; }
+@media (max-width: 760px) { .fan { grid-template-columns: 1fr; } }
+.legend i.diamond-key { width: 8px; height: 8px; background: var(--truth); transform: rotate(45deg); border-radius: 0; }

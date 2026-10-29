@@ -85,41 +85,22 @@ function quarterExplorer(Q, byQ) {
 }
 
 function drawQuarter(q) {
-  const pts = q.dates.map((d, i) => ({ date: day(d), v: q.nowcast[i] }));
+  const pts = q.dates.map((d, i) => ({ date: day(d), v: q.nowcast[i], sd: q.sd ? q.sd[i] : null }));
+  const band = pts.filter((d) => d.sd != null);
   const first = pts[0].v, last = pts.at(-1).v;
   document.getElementById("q-title").textContent = q.advance == null
     ? `${q.q}: the nowcast went from ${fmt.n(first, 1)}% to ${fmt.n(last, 1)}%; BEA's first estimate is not out yet`
     : `${q.q}: the nowcast went from ${fmt.n(first, 1)}% to ${fmt.n(last, 1)}%; BEA's first estimate was ${fmt.n(q.advance, 1)}%`;
 
-  const refs = [];
-  if (q.advance != null) refs.push({ label: "first estimate", v: q.advance, dash: "5 3" });
-  if (q.latest != null) refs.push({ label: "latest revised", v: q.latest, dash: "1.5 3" });
   const nyAll = q.nyfed.filter((d) => d.date).map((d) => ({ date: day(d.date), v: d.value }));
   document.getElementById("q-nyfed-wrap").hidden = !nyAll.length;
   const ny = document.getElementById("q-nyfed").checked ? nyAll : [];
-  const legend = [`<span><i style="background:${col("accent")}"></i>our weekly nowcast</span>`];
-  if (refs.length) legend.push(`<span><i style="background:${col("truth")}"></i>BEA estimates (dashed: first, dotted: latest)</span>`);
+  const legend = [`<span><i class="diamond-key"></i>our weekly nowcast</span>`,
+                  `<span><i style="background:${fanTints()[3]};height:10px"></i>50, 60, 70 and 80% probability intervals</span>`];
+  if (q.advance != null) legend.push(`<span><i style="background:${col("truth")}"></i>BEA estimates (dashed: first, dotted: latest)</span>`);
   if (ny.length) legend.push(`<span><i class="ring"></i>New York Fed's published nowcast (its older model, weekly reports 2016–2021)</span>`);
   document.getElementById("q-legend").innerHTML = legend.join("");
-
-  const all = [...pts.map((d) => d.v), ...refs.map((r) => r.v), ...ny.map((d) => d.v)];
-  mount("q-path", Plot.plot({
-    width: W("q-path"), height: 300, marginLeft: 40, marginRight: 140, style: PLOT_STYLE,
-    x: { type: "time", label: null },
-    y: { label: "GDP growth, %", grid: true, domain: [d3.min(all) - 0.6, d3.max(all) + 0.6] },
-    marks: [
-      Plot.ruleY([0], { stroke: col("ink-3"), strokeOpacity: 0.5 }),
-      ...refs.map((r) => Plot.ruleY([r.v], { stroke: col("truth"), strokeDasharray: r.dash })),
-      Plot.text(refs, { x: () => pts.at(-1).date, y: "v", dx: 8, textAnchor: "start", fill: col("ink-2"),
-                        text: (r) => `${r.label} ${fmt.n(r.v, 1)}%` }),
-      Plot.lineY(pts, { x: "date", y: "v", stroke: col("accent"), strokeWidth: 2 }),
-      Plot.dot(pts, { x: "date", y: "v", fill: col("accent"), r: 3.2, tip: true,
-                      title: (d) => `${fmt.date(d.date.toISOString().slice(0, 10))}\nnowcast ${fmt.n(d.v, 2)}%` }),
-      Plot.lineY(ny, { x: "date", y: "v", stroke: col("ink-3"), strokeWidth: 1.3 }),
-      Plot.dot(ny, { x: "date", y: "v", stroke: col("ink-2"), fill: col("bg"), r: 3.8, strokeWidth: 1.4, tip: true,
-                     title: (d) => `New York Fed, ${fmt.date(d.date.toISOString().slice(0, 10))}: ${fmt.n(d.v, 2)}%` }),
-    ],
-  }));
+  fanChart("q-path", q, { nyfed: ny, latest: true });
 
   // weekly contributions: news by category, data revisions, re-estimation
   const rows = [];
