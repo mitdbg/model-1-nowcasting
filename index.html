@@ -33,46 +33,53 @@
     economy is growing <em>right now</em>, before the official GDP figure is published, and forecast monthly
     indicators for the whole economy and for 13 industries.</p>
 
-  <div class="grid three" id="stats" style="margin: 28px 0 8px">
-    <div class="stat"><div class="value" id="stat-now">…</div><div class="label" id="stat-now-label">Latest GDP nowcast</div></div>
-    <div class="stat"><div class="value">1.37</div><div class="label">Error of the GDP nowcast on the day before the first official estimate, 2006–2019 (New York Fed's own model: 1.3)</div></div>
-    <div class="stat"><div class="value">65%</div><div class="label">Smaller errors than a simple benchmark that only extrapolates past GDP growth</div></div>
-  </div>
-  <p class="small muted">Errors are mean squared errors in percentage points of annualized growth, squared; lower is better.
-    <a href="methods.html#scores">How we measure accuracy</a>.</p>
-
-  <h2>What is a nowcast?</h2>
+  <h2>This quarter</h2>
+  <p class="headline" id="headline">The model's latest estimate of this quarter's GDP growth is loading…</p>
+  <figure class="chart">
+    <div class="plot" id="now-chart"></div>
+    <figcaption id="now-caption"></figcaption>
+  </figure>
   <div class="prose">
     <p>The government's first estimate of GDP growth for a quarter comes out about a month after the quarter ends.
       In the meantime, dozens of monthly statistics are published, each telling us a little about how the quarter
       is going. A <strong>nowcast</strong> combines them into a running estimate of the quarter's growth, updated
-      every week as new numbers arrive.</p>
-    <p>The chart below shows this for the current quarter. Each dot is one week's nowcast. Early on the model knows
-      little and stays close to normal growth; as reports come in, it moves toward what the data say.</p>
+      every week as new numbers arrive. Each dot above is one week's nowcast: early on the model knows little and
+      stays close to normal growth; as reports come in, it moves toward what the data say.</p>
+  </div>
+
+  <h2>How close does it get?</h2>
+  <div class="prose">
+    <p>We replayed every quarter from 2006 to 2019, each week using only the data published by then. On the day
+      before the government's first estimate, the nowcast's mean squared error was <strong>1.37</strong>, about the
+      same as the New York Fed reports for its own model (<strong>1.3</strong>) and <strong>65% lower</strong> than a
+      simple benchmark that only extrapolates past GDP growth (<strong>3.93</strong>).</p>
   </div>
   <figure class="chart">
-    <p class="chart-title" id="now-title">The current quarter</p>
-    <p class="chart-sub">Weekly nowcast of real GDP growth, % at an annual rate</p>
-    <div class="plot" id="now-chart"></div>
-    <figcaption id="now-caption"></figcaption>
+    <div class="plot" id="acc-strip"></div>
+    <figcaption>Mean squared error, in squared percentage points of annualized growth; lower is better. An error of 1.37
+      means a typical miss of about 1.2 points. <a href="methods.html#scores">How we measure accuracy</a>.</figcaption>
   </figure>
 
-  <h2>Two models</h2>
-  <div class="grid two">
-    <a class="card" href="nowcast.html">
-      <h3>The GDP nowcast</h3>
-      <p>A replica of the New York Fed's <em>Staff Nowcast 2.0</em>, built from 35 public data series. Tested
-        over 82 quarters on the data that were actually available each week, it is about as accurate as the New
-        York Fed reports for its own model.</p>
-      <span class="more">Explore the GDP nowcast →</span>
-    </a>
-    <a class="card" href="industries.html">
-      <h3>The industry models</h3>
-      <p>Forecasts of national monthly indicators and of 13 industries, from steel to health care, using
-        over 300 monthly series. Industry information gives small but steady gains, and large ones for trade
-        and freight.</p>
-      <span class="more">Explore the industry models →</span>
-    </a>
+  <h2>Two parts to the project</h2>
+  <div class="parts">
+    <section class="part">
+      <p class="kicker">Part one</p>
+      <h3><a href="nowcast.html">The GDP nowcast</a></h3>
+      <p>A replica of the New York Fed's <em>Staff Nowcast 2.0</em>, built from 35 public data series and
+        tested over 82 quarters on the data that were actually available each week.</p>
+      <div class="plot mini" id="mini-gdp"></div>
+      <p class="mini-cap">Last nowcast before each first estimate (dots) against the estimate itself (line), since late 2020.</p>
+      <p><a href="nowcast.html">Every quarter, week by week →</a></p>
+    </section>
+    <section class="part">
+      <p class="kicker">Part two</p>
+      <h3><a href="industries.html">The industry models</a></h3>
+      <p>Forecasts of national monthly indicators and of 13 industries, from steel to health care, using over 300
+        monthly series. Industry information gives small but steady gains, and large ones for trade and freight.</p>
+      <div class="plot mini" id="mini-ind"></div>
+      <p class="mini-cap">Median gain over the benchmark across each industry's activity series, as a nowcast, on real-time data.</p>
+      <p><a href="industries.html">Industry by industry →</a></p>
+    </section>
   </div>
 
   <h2>How to read this site</h2>

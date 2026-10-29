@@ -152,3 +152,21 @@ details.deep[open] { padding-bottom: 12px; }
   nav.main a { padding: 4px 7px; font-size: 0.88rem; }
   .stat .value { font-size: 1.5rem; }
 }
+
+/* home page: a headline sentence instead of stat tiles, two text columns instead of cards */
+.headline { font-size: 1.45rem; line-height: 1.4; max-width: 44rem; margin: 0.2rem 0 0.4rem; letter-spacing: -0.01em; }
+.headline strong { color: var(--accent); font-variant-numeric: tabular-nums; }
+.parts { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 2px solid var(--ink); margin-top: 0.8rem; }
+.part { padding: 14px 32px 4px 0; }
+.part + .part { border-left: 1px solid var(--line); padding: 14px 0 4px 32px; }
+.part .kicker { font-size: 0.76rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 2px; }
+.part h3 { margin: 0 0 8px; font-size: 1.25rem; }
+.part h3 a { color: var(--ink); text-decoration: none; }
+.part h3 a:hover { color: var(--accent); }
+.plot.mini { margin: 6px 0 2px; }
+.mini-cap { color: var(--ink-3); font-size: 0.82rem; margin-bottom: 10px; }
+@media (max-width: 760px) {
+  .parts { grid-template-columns: 1fr; }
+  .part, .part + .part { padding: 14px 0 4px; border-left: 0; }
+  .part + .part { border-top: 1px solid var(--line); }
+}
