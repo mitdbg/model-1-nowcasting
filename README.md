@@ -1,4 +1,4 @@
-# US Economy Nowcasting: public results site
+# K.E.Y.N.E.S.: public results site
 
 A static site (plain HTML, CSS and JavaScript, no build step) presenting the GDP nowcast and the
 industry models of the `m1dfm` project. Charts use Observable Plot and equations KaTeX, both from

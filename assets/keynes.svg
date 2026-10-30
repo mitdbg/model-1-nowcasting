@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 56" role="img" aria-label="K.E.Y.N.E.S.">
+  <defs>
+    <filter id="glow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="scan" width="4" height="3" patternUnits="userSpaceOnUse">
+      <rect width="4" height="1" fill="#000" opacity="0.45"/>
+    </pattern>
+    <radialGradient id="screen" cx="50%" cy="45%" r="75%">
+      <stop offset="0" stop-color="#0d1a1c"/>
+      <stop offset="1" stop-color="#030607"/>
+    </radialGradient>
+  </defs>
+  <!-- bezel and screen -->
+  <rect x="0.5" y="0.5" width="219" height="55" rx="7" fill="#15181b" stroke="#2c3238"/>
+  <rect x="5" y="4" width="210" height="36" rx="4" fill="url(#screen)"/>
+  <!-- block letters, as on a 1980s terminal -->
+  <text x="110" y="31" text-anchor="middle" font-family="'Courier New', Courier, monospace" font-weight="700"
+        font-size="25" letter-spacing="1.5" fill="#7fe8ff" filter="url(#glow)">K.E.Y.N.E.S.</text>
+  <rect x="5" y="4" width="210" height="36" rx="4" fill="url(#scan)"/>
+  <!-- front-panel lights -->
+  <g>
+    <circle cx="16" cy="48" r="2.2" fill="#ff3b30"><animate attributeName="opacity" values="1;0.25;1" dur="1.7s" repeatCount="indefinite"/></circle>
+    <circle cx="25" cy="48" r="2.2" fill="#ffb000"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.1s" repeatCount="indefinite"/></circle>
+    <circle cx="34" cy="48" r="2.2" fill="#ff3b30"><animate attributeName="opacity" values="1;1;0.2;1" dur="2.3s" repeatCount="indefinite"/></circle>
+    <circle cx="43" cy="48" r="2.2" fill="#ffb000" opacity="0.4"/>
+    <circle cx="52" cy="48" r="2.2" fill="#ff3b30"><animate attributeName="opacity" values="0.2;1;0.2" dur="0.9s" repeatCount="indefinite"/></circle>
+    <circle cx="61" cy="48" r="2.2" fill="#ffb000"><animate attributeName="opacity" values="1;0.3;1" dur="2.9s" repeatCount="indefinite"/></circle>
+  </g>
+  <text x="211" y="51" text-anchor="end" font-family="'Courier New', Courier, monospace" font-size="6.5"
+        letter-spacing="0.8" fill="#6c7782">ECONOMIC SCENARIO ENGINE</text>
+</svg>
