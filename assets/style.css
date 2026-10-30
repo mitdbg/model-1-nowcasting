@@ -190,3 +190,5 @@ details.deep[open] { padding-bottom: 12px; }
 .brand .kn { font-size: 0.82rem; font-weight: 600; line-height: 1.25; max-width: 12.6rem; color: var(--ink); white-space: normal; }
 .brand .kn b { color: var(--key); font-weight: 800; }
 @media (max-width: 640px) { .brand .kn { display: none; } .brand img { width: 140px; height: auto; } }
+
+.updated { background: var(--surface); border-bottom: 1px solid var(--line); color: var(--ink-2); font-size: 0.82rem; padding: 5px 0; }

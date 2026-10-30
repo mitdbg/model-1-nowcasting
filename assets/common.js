@@ -91,7 +91,19 @@ function showError(id, err) {
   console.error(err);
 }
 
+// "Results last updated: <time>" under the header, from data/meta.json (written by the data build)
+async function updatedNote() {
+  try {
+    const { updated } = await SITE.data("meta");
+    const t = new Date(updated).toLocaleString("en-US", { timeZone: "America/New_York", year: "numeric", month: "short",
+      day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+    const note = el("div", { class: "updated" }, el("div", { class: "wrap" }, `Results last updated: ${t}`));
+    document.querySelector("header.site").after(note);
+  } catch (e) { console.error(e); }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  updatedNote();
   const page = location.pathname.split("/").pop() || "index.html";
   document.querySelectorAll("nav.main a").forEach((a) => {
     if (a.getAttribute("href") === page) a.setAttribute("aria-current", "page");
