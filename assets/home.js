@@ -23,6 +23,12 @@ function seriesCount(rows) {
     `${ind} for the industry models, with ${gdp + ind - all} shared by both.`;
 }
 
+// "up from", "down from" or "unchanged from", judged on the values as printed (one decimal)
+const movedFrom = (a, b) => {
+  const d = Math.round(b * 10) - Math.round(a * 10);
+  return d > 0 ? "up from" : d < 0 ? "down from" : "unchanged from";
+};
+
 function current(q) {
   const first = q.nowcast[0], last = q.nowcast.at(-1), sd = q.sd ? q.sd.at(-1) : null;
   const b = quarterBounds(q);
@@ -31,7 +37,7 @@ function current(q) {
   const interval = (z) => `${fmt.n(last - z * sd, 1)}% and ${fmt.n(last + z * sd, 1)}%`;
   document.getElementById("headline").innerHTML =
     `As of ${fmt.date(q.dates.at(-1))}, the model puts ${QUARTER_WORDS[n]}-quarter ${year} growth at ` +
-    `<strong>${fmt.n(last, 1)}%</strong> a year, up from ${fmt.n(first, 1)}% in ${month(q.dates[0])}` +
+    `<strong>${fmt.n(last, 1)}%</strong> a year, ${movedFrom(first, last)} ${fmt.n(first, 1)}% in ${month(q.dates[0])}` +
     `${new Date(`${q.dates[0]}T12:00:00`) < b.start ? ", before the quarter began" : ""}.` +
     (sd != null ? ` There is a 50% chance that growth is between ${interval(0.6745)}, and an 80% chance it is between ${interval(1.2816)}.` : "");
   fanChart("now-chart", q, { height: 320 });
