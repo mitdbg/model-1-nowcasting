@@ -78,7 +78,7 @@ function quarterExplorer(Q, byQ) {
   const sel = document.getElementById("q-select");
   [...Q].reverse().forEach((q) => sel.append(el("option", { value: q.q }, q.q + (q.advance == null ? " (current)" : ""))));
   const fromHash = location.hash.match(/^#q=(\d{4}Q\d)$/);
-  sel.value = fromHash && byQ[fromHash[1]] ? fromHash[1] : Q.at(-1).q;
+  sel.value = fromHash && byQ[fromHash[1]] ? fromHash[1] : (Q.find((q) => q.advance == null) || Q.at(-1)).q;
   const draw = () => drawQuarter(byQ[sel.value]);
   sel.addEventListener("change", draw);
   document.getElementById("q-nyfed").addEventListener("change", draw);

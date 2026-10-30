@@ -5,7 +5,7 @@ const QUARTER_WORDS = { 1: "first", 2: "second", 3: "third", 4: "fourth" };
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const { quarters } = await SITE.data("nowcast");
-    current(quarters.at(-1));
+    current(quarters.find((q) => q.advance == null) || quarters.at(-1));   // the earliest quarter BEA has not published
     miniGdp(quarters);
   } catch (e) { showError("now-chart", e); }
   try { miniIndustries(await SITE.data("model1_accuracy")); } catch (e) { showError("mini-ind", e); }
