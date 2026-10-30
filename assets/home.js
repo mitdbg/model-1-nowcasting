@@ -10,7 +10,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     miniGdp(quarters);
   } catch (e) { showError("now-chart", e); }
   try { miniIndustries(await SITE.data("model1_accuracy")); } catch (e) { showError("mini-ind", e); }
+  try { seriesCount(await SITE.data("datasets")); } catch (e) { console.error(e); }
 });
+
+// "built using X distinct data series", counted from the series list the build script derives from the model configs
+function seriesCount(rows) {
+  const uses = (r, m) => r.used.includes(m);
+  const gdp = rows.filter((r) => uses(r, "GDP nowcast")).length;
+  const ind = rows.filter((r) => uses(r, "Industry models")).length;
+  const all = rows.filter((r) => uses(r, "GDP nowcast") || uses(r, "Industry models")).length;
+  document.getElementById("series-count").textContent =
+    ` These models are built using ${all.toLocaleString("en-US")} distinct data series: ${gdp} for the GDP nowcast and ` +
+    `${ind} for the industry models, with ${gdp + ind - all} shared by both.`;
+}
 
 function current(q) {
   const first = q.nowcast[0], last = q.nowcast.at(-1), sd = q.sd ? q.sd.at(-1) : null;
