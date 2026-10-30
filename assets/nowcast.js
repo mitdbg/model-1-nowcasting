@@ -149,9 +149,10 @@ function drawQuarter(q) {
     color: { domain: keys, range: colors },
     marks: [
       Plot.gridY({ stroke: col("line"), strokeOpacity: 1 }),
-      Plot.axisY({ anchor: "left", label: "← change in nowcast, points", labelAnchor: "center" }),
-      Plot.axisY(rightTicks, { anchor: "right", tickFormat: (y) => `${fmt.n(fromY(y), 1)}%`, label: "nowcast, % a year →",
-                               labelAnchor: "center", color: col("truth") }),
+      Plot.axisY({ anchor: "left", label: "change in nowcast, points", labelAnchor: "center", labelArrow: "none",
+                   tickSize: 0, tickPadding: 6 }),
+      Plot.axisY(rightTicks, { anchor: "right", tickFormat: (y) => `${fmt.n(fromY(y), 1)}%`, label: "nowcast, % a year",
+                               labelAnchor: "center", labelArrow: "none", tickSize: 0, tickPadding: 6, color: col("truth") }),
       Plot.ruleX([bnd.start, bnd.end], { stroke: col("ink-3"), strokeDasharray: "3 3" }),
       Plot.text([[bnd.start, "START OF QUARTER"], [bnd.end, "END OF QUARTER"]], { x: (d) => d[0], text: (d) => d[1], frameAnchor: "top",
         dy: -20, dx: 3, textAnchor: "start", fill: col("ink-3"), fontSize: 10, fontWeight: 600 }),
