@@ -117,21 +117,52 @@ function drawQuarter(q) {
   });
   const keys = [...CATEGORIES.map(([, l]) => l), "Data revisions", "Re-estimation"];
   const colors = [...CATEGORIES.map(([, , c]) => c), "#7b8494", "#c3c8d0"];
-  document.getElementById("q-news-legend").innerHTML = keys.map((k, i) =>
-    `<span><i class="dot" style="background:${colors[i]}"></i>${k}</span>`).join("");
+  document.getElementById("q-news-legend").innerHTML = `<span><i class="diamond-key"></i>nowcast (right axis)</span>` +
+    keys.map((k, i) => `<span><i class="dot" style="background:${colors[i]}"></i>${k}</span>`).join("");
+  // stack each week's contributions by hand (positives up from zero, negatives down) so bars sit on a time axis
+  const HALF = 2.9 * 864e5;                                  // bar half-width: most of a week
+  const stacked = [];
+  for (const [d, rs] of d3.group(rows, (r) => +r.date)) {
+    let up = 0, down = 0;
+    for (const r of [...rs].sort((a, b) => keys.indexOf(a.key) - keys.indexOf(b.key))) {
+      const y1 = r.v >= 0 ? up : down, y2 = y1 + r.v;
+      if (r.v >= 0) up = y2; else down = y2;
+      stacked.push({ ...r, x1: new Date(d - HALF), x2: new Date(d + HALF), y1, y2 });
+    }
+  }
+  // the nowcast itself, read on a right-hand axis: map its range onto the bars' range
+  const level = q.dates.map((d, i) => ({ date: day(d), v: q.nowcast[i] }));
+  const lo = Math.min(0, d3.min(stacked, (r) => Math.min(r.y1, r.y2)) ?? 0), hi = Math.max(0, d3.max(stacked, (r) => Math.max(r.y1, r.y2)) ?? 0);
+  const pad = (hi - lo) * 0.08 || 0.1;
+  const [ylo, yhi] = [lo - pad, hi + pad];
+  const [vlo, vhi] = d3.extent(level, (d) => d.v);
+  const vpad = Math.max(0.3, (vhi - vlo) * 0.15);
+  const [a, b] = [vlo - vpad, vhi + vpad];
+  const toY = (v) => ylo + (v - a) / (b - a) * (yhi - ylo), fromY = (y) => a + (y - ylo) / (yhi - ylo) * (b - a);
+  const rightTicks = d3.ticks(a, b, 5).map(toY);
+  const bnd = quarterBounds(q);
+  const xdom = [d3.min([level[0].date, bnd.start]) - HALF, d3.max([level.at(-1).date, bnd.end]) + HALF];
   mount("q-news", Plot.plot({
-    width: W("q-news"), height: 260, marginLeft: 40, style: PLOT_STYLE,
-    x: { type: "band", label: null, tickFormat: (d) => d3.timeFormat("%b %d")(d),
-         domain: q.dates.slice(1).map(day) },
-    y: { label: "change, points", grid: true },
+    width: W("q-news"), height: 300, marginTop: 34, marginLeft: 44, marginRight: 52, style: PLOT_STYLE,
+    x: { type: "time", label: null, domain: xdom.map((t) => new Date(t)) },
+    y: { domain: [ylo, yhi], axis: null },
     color: { domain: keys, range: colors },
     marks: [
-      Plot.barY(rows, { x: "date", y: "v", fill: "key", order: keys, inset: 1, tip: true,
-                        title: (d) => `${d3.timeFormat("%b %d, %Y")(d.date)}\n${d.key}: ${fmt.signed(d.v, 2)} points` }),
+      Plot.gridY({ stroke: col("line"), strokeOpacity: 1 }),
+      Plot.axisY({ anchor: "left", label: "← change in nowcast, points", labelAnchor: "center" }),
+      Plot.axisY(rightTicks, { anchor: "right", tickFormat: (y) => `${fmt.n(fromY(y), 1)}%`, label: "nowcast, % a year →",
+                               labelAnchor: "center", color: col("truth") }),
+      Plot.ruleX([bnd.start, bnd.end], { stroke: col("ink-3"), strokeDasharray: "3 3" }),
+      Plot.text([[bnd.start, "START OF QUARTER"], [bnd.end, "END OF QUARTER"]], { x: (d) => d[0], text: (d) => d[1], frameAnchor: "top",
+        dy: -20, dx: 3, textAnchor: "start", fill: col("ink-3"), fontSize: 10, fontWeight: 600 }),
+      Plot.rect(stacked, { x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "key", inset: 0.5, tip: true,
+                           title: (d) => `${d3.timeFormat("%b %d, %Y")(d.date)}\n${d.key}: ${fmt.signed(d.v, 2)} points` }),
       Plot.ruleY([0], { stroke: col("ink-3") }),
+      Plot.lineY(level, { x: "date", y: (d) => toY(d.v), stroke: col("truth"), strokeWidth: 1.6 }),
+      Plot.dot(level, { x: "date", y: (d) => toY(d.v), symbol: "diamond2", fill: col("truth"), r: 4, tip: true,
+                        title: (d) => `${d3.timeFormat("%b %d, %Y")(d.date)}\nnowcast ${fmt.n(d.v, 2)}%` }),
     ],
   }));
-  thinBandTicks("q-news");
 
   const totals = CATEGORIES.map(([k, l]) => ({ l, v: d3.sum(q.news[k] || []) }))
     .concat([{ l: "data revisions", v: d3.sum(q.revisions) }]);
@@ -151,12 +182,6 @@ function drawQuarter(q) {
      <td>${r.month}</td><td class="num">${fmt.n(r.actual, 2)}</td><td class="num">${fmt.n(r.expected, 2)}</td>
      <td class="num ${r.impact > 0 ? "good" : "bad"}">${fmt.signed(r.impact, 2)}</td>` })));
   t.append(body);
-}
-
-function thinBandTicks(id) {   // a band axis with 20 dates: keep every third label
-  document.querySelectorAll(`#${id} [aria-label="x-axis tick label"] text`).forEach((n, i) => {
-    if (i % 3) n.remove();
-  });
 }
 
 // ------------------------------------------------------------------ accuracy
