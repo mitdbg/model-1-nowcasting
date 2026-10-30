@@ -109,7 +109,16 @@
       misses, in percentage points of annualized growth. An MSE of 1.4 means a typical miss of about 1.2 points.
       Lower is better. The yardstick is a simple <strong>autoregressive (AR) benchmark</strong>, which
       forecasts GDP growth from its own past alone.</p>
+    <p>We replayed every quarter from 2006 to 2019, each week using only the data published by then. On the day
+      before the government's first estimate, the nowcast's mean squared error was <strong>1.37</strong>, about the
+      same as the New York Fed reports for its own model (<strong>1.3</strong>) and <strong>65% lower</strong> than the
+      benchmark (<strong>3.93</strong>).</p>
   </div>
+  <figure class="chart">
+    <div class="plot" id="acc-strip"></div>
+    <figcaption>Mean squared error on the day before BEA's first estimate, 2006–2019, in squared percentage points of
+      annualized growth; lower is better. <a href="methods.html#scores">How we measure accuracy</a>.</figcaption>
+  </figure>
   <figure class="chart">
     <p class="chart-title">The error falls by two-thirds as the quarter's data arrive</p>
     <p class="chart-sub">Mean squared error against BEA's first estimate, 55 quarters 2006Q2–2019Q4</p>

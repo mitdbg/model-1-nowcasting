@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const byQ = Object.fromEntries(Q.map((q) => [q.q, q]));
   history(Q);
   quarterExplorer(Q, byQ);
+  accuracyStrip();
   accuracy(D);
   ablations(D);
   shares(D);
@@ -159,6 +160,30 @@ function thinBandTicks(id) {   // a band axis with 20 dates: keep every third la
 }
 
 // ------------------------------------------------------------------ accuracy
+
+function accuracyStrip() {
+  // pre-pandemic MSE on the day before BEA's first estimate (as in "Scores in full" below)
+  const grey = "#9aa1ad";
+  const label = (p, above, anchor, extra = {}) => Plot.text([p], { x: "v", y: () => 0.5, text: (d) => `${d.name} ${d.v}`,
+    dy: above ? -16 : 18, textAnchor: anchor, fill: col("ink"), ...extra });
+  const ours = { name: "our nowcast", v: 1.37 }, ny = { name: "New York Fed's own model", v: 1.3 };
+  const older = { name: "our replica of the older NY Fed model", v: 1.71 }, ar = { name: "benchmark", v: 3.93 };
+  mount("acc-strip", Plot.plot({
+    width: Math.min(W("acc-strip"), 760), height: 120, marginLeft: 20, marginRight: 40, marginTop: 24, style: PLOT_STYLE,
+    x: { domain: [0, 4.5], label: "mean squared error →", ticks: [0, 1, 2, 3, 4] },
+    y: { axis: null, domain: [0, 1] },
+    marks: [
+      Plot.ruleY([0.5], { stroke: col("line"), strokeWidth: 2 }),
+      Plot.dot([older, ar], { x: "v", y: () => 0.5, fill: grey, r: 6, stroke: col("bg"), strokeWidth: 1.5 }),
+      Plot.dot([ny], { x: "v", y: () => 0.5, stroke: col("ink-2"), strokeWidth: 1.6, r: 7 }),
+      Plot.dot([ours], { x: "v", y: () => 0.5, fill: col("accent"), r: 6.5, stroke: col("bg"), strokeWidth: 1.5 }),
+      label(ours, true, "end", { fontWeight: 650, dx: 4 }),
+      label(ny, false, "end", { dx: 4 }),
+      label(older, false, "start", { dx: -4 }),
+      label(ar, true, "middle"),
+    ],
+  }));
+}
 
 function accuracy(D) {
   const pts = [
