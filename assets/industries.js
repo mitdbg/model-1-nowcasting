@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try { A = await SITE.data("model1_accuracy"); } catch (e) { showError("ind-chart", e); return; }
   try { forecasts(A, await SITE.data("industry_forecasts")); } catch (e) { showError("fc-table", e); }
   overview(A);
-  explorer(A);
+  try { pages(await SITE.data("models")); } catch (e) { showError("ind-pages", e); }
   national(A);
 });
 
@@ -47,44 +47,12 @@ function overview(A) {
   state.block = "activity"; hSet("0");
 }
 
-function explorer(A) {
-  const sel = document.getElementById("ind-select");
-  Object.entries(A.labels).forEach(([k, v]) => sel.append(el("option", { value: k }, v)));
-  const H = [0, 1, 3, 6];
-  const draw = () => {
-    const s = sel.value;
-    const own = A.sectors.filter((r) => r.sector === s);
-    const econ = A.sectors.filter((r) => r.sector === "economy" && r.block === s);
-    const targets = [...new Set(own.map((r) => r.target))];
-    const cell = (rows, t, h, span, cmp) => rows.find((r) => r.target === t && r.horizon === h && r.span === span && r.comparison === cmp);
-    const td = (x) => {
-      if (!x || x.rel == null) return `<td class="num muted">–</td>`;
-      const g = gain(x.rel), cls = g >= 2 ? "good" : g <= -2 ? "bad" : "";
-      return `<td class="num ${cls}" title="relative error ${fmt.n(x.rel, 3)}, p ${fmt.n(x.p, 2)}">${g > 0 ? "+" : ""}${g.toFixed(0)}%${x.p != null && x.p < 0.1 ? "*" : ""}</td>`;
-    };
-    let html = `<thead><tr><th>Target</th><th>Model</th>${H.map((h) => `<th class="num">h = ${h}</th>`).join("")}</tr></thead><tbody>`;
-    for (const t of targets) {
-      const r0 = own.find((r) => r.target === t);
-      const isPrice = r0.block === "prices";
-      const cmp = isPrice ? "S-t5 vs AR-t5" : "S vs AR";
-      const lines = [["Industry model", own, "real-time", cmp]];
-      if (!isPrice && econ.some((r) => r.target === t)) lines.push([`Economy model <span class="muted small">· tested from ${econ[0].real_from}</span>`, econ, "real-time", "S vs AR"]);
-      const has = (l) => H.some((h) => { const x = cell(l[1], t, h, l[2], l[3]); return x && x.rel != null; });
-      lines.splice(0, lines.length, ...lines.filter(has));
-      if (!lines.length) continue;
-      lines.forEach(([label, rows, span, c], i) => {
-        html += `<tr>${i === 0 ? `<td rowspan="${lines.length}"><strong>${r0.name}</strong><br><span class="muted small">${t} · ${r0.block}${r0.real_from ? ` · tested from ${r0.real_from}` : ""}</span></td>` : ""}
-          <td>${label}</td>${H.map((h) => td(cell(rows, t, h, span, c))).join("")}</tr>`;
-      });
-    }
-    document.getElementById("ind-table").innerHTML = html + "</tbody>";
-    document.getElementById("ind-table-note").textContent =
-      "Percent better (+) or worse (−) than the AR benchmark; * significant at 10% (Diebold–Mariano). Hover a cell for the exact relative error and p-value. " +
-      "Price targets compare both models on plain growth rates.";
-  };
-  sel.addEventListener("change", draw);
-  sel.value = "trade";
-  draw();
+function pages(M) {
+  const ind = M.production.filter((x) => x.kind === "industry");
+  const link = (x) => `<a href="${x.page}">${x.name}</a>`;
+  document.getElementById("ind-pages").innerHTML = `<thead><tr><th>Industry</th><th>Activity</th><th>Prices</th></tr></thead><tbody>` +
+    Object.entries(M.industries).map(([sec, I]) => `<tr><td>${I.label}</td>` +
+      ["activity", "prices"].map((b) => `<td>${link(ind.find((x) => x.sector === sec && x.block === b))}</td>`).join("") + "</tr>").join("") + "</tbody>";
 }
 
 function national(A) {
@@ -112,21 +80,16 @@ function national(A) {
 }
 
 function forecasts(A, F) {
-  const H = [0, 1, 3, 6, 12];
-  const record = (r) => {
-    const x = A.sectors.find((a) => a.sector === r.sector && a.target === r.target && a.horizon === 0
-      && a.span === "real-time" && a.comparison === r.comparison);
-    return x && x.rel != null ? gain(x.rel) : null;
-  };
-  const rows = F.rows.map((r) => ({ ...r, label: A.labels[r.sector], record: record(r) }));
+  const rows = F.rows.map((r) => ({ ...r, label: A.labels[r.sector], record: fcRecord(A, r) }));
   const state = { sort: "industry", block: "all" };
   const order = Object.keys(A.labels);
+  const model = (r) => `IND-${r.sector.toUpperCase()}${r.block === "prices" ? "-P5" : ""}`;
   document.getElementById("fc-intro").innerHTML =
     `What each industry model predicts for every series it targets, next to the <strong>AR benchmark</strong>, a forecast
     from the series' own past. Forecasts use the data published by the end of ${MONTH(F.vintage)}. Numbers are the
     % change from the latest published value (capacity utilization: the rate itself, in %); <strong>0</strong> is the first
     month not yet published, and 1, 3, 6 and 12 are months after that. Prices are forecast as plain growth rates, as in
-    the price scores below.`;
+    the price scores below. The model's name under each series links to its page.`;
   const draw = () => {
     let list = rows.filter((r) => state.block === "all" || r.block === state.block);
     const byName = (a, b) => a.name.localeCompare(b.name);
@@ -134,23 +97,15 @@ function forecasts(A, F) {
     if (state.sort === "name") list.sort(byName);
     if (state.sort === "record") list.sort((a, b) => (b.record ?? -1e9) - (a.record ?? -1e9));
     const th = (k, label, cls = "") => `<th class="sortable ${cls}" data-sort="${k}">${label}${state.sort === k ? " ▾" : ""}</th>`;
-    let html = `<thead><tr>${th("name", "Series")}<th>History and forecast</th><th class="num">Latest</th>
-      ${H.map((h) => `<th class="num">${h === 0 ? "0 (now)" : h}</th>`).join("")}${th("record", "Track<br>record", "num")}</tr></thead><tbody>`;
+    let html = fcHead(th("name", "Series"), th("record", "Track<br>record", "num")) + "<tbody>";
     let group = null;
     for (const r of list) {
       if (state.sort === "industry" && r.label !== group) {
         group = r.label;
-        html += `<tr class="group"><td colspan="${H.length + 4}">${group}</td></tr>`;
+        html += `<tr class="group"><td colspan="${FC_H.length + 4}">${group}</td></tr>`;
       }
-      const cells = H.map((h) => {
-        const m = (r.model || []).find((x) => x.h === h), a = (r.ar || []).find((x) => x.h === h);
-        const tip = m ? `${MONTH(m.month)}: model ${fcValue(m, r.unit)}` + (m.lo != null ? ` (68% range ${fcValue({ value: m.lo }, r.unit)} to ${fcValue({ value: m.hi }, r.unit)})` : "") + `, AR ${fcValue(a, r.unit)}` : "";
-        return `<td class="num" title="${tip}"><span class="val">${fcValue(m, r.unit)}</span><span class="ar">AR ${fcValue(a, r.unit)}</span></td>`;
-      }).join("");
-      const g = r.record, cls = g == null ? "muted" : g >= 2 ? "good" : g <= -2 ? "bad" : "";
-      html += `<tr><td><strong>${r.name}</strong><br><span class="muted small">${r.fred ? `<a href="${r.fred}" target="_blank" rel="noopener">${r.target}</a>` : r.target} · ${state.sort === "industry" ? "" : `${r.label} · `}${r.block}</span></td>
-        <td>${sparkline(r)}</td><td class="num small">${MONTH(r.last_month)}</td>${cells}
-        <td class="num ${cls}" title="Errors as a nowcast, relative to the AR's, on data as first published">${g == null ? "–" : `${g > 0 ? "+" : ""}${g.toFixed(0)}%`}</td></tr>`;
+      const name = `<a href="model.html?m=${model(r)}">${model(r)}</a>`;
+      html += fcRow(r, state.sort === "industry" ? name : `${r.label} · ${name}`);
     }
     const t = document.getElementById("fc-table");
     t.innerHTML = html + "</tbody>";
@@ -159,10 +114,7 @@ function forecasts(A, F) {
   const setSort = segmented(document.getElementById("fc-sort"), (v) => { state.sort = v; draw(); });
   segmented(document.getElementById("fc-block"), (v) => { state.block = v; draw(); })("all");
   setSort("industry");
-  document.getElementById("fc-note").innerHTML =
-    `<span class="fc-key"><i style="border-color:${col("ink-2")}"></i>published data, last 3 years</span>` +
-    `<span class="fc-key"><i style="border-color:${col("accent")}"></i>industry model (shaded: 68% range)</span>` +
-    `<span class="fc-key"><i style="border-color:${col("ink-3")};border-top-style:dashed"></i>AR benchmark</span><br>` +
-    `Track record: how much smaller the model's errors have been than the AR's as a nowcast (month 0), on data as first
+  document.getElementById("fc-note").innerHTML = fcKey() + `<br>
+    Track record: how much smaller the model's errors have been than the AR's as a nowcast (month 0), on data as first
     published; see <a href="#industries">Industry by industry</a>. Hover a forecast for its month and range, or a sparkline for the latest value.`;
 }

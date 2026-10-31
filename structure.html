@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Model Structure · KEYNES</title>
-<meta name="description" content="The hidden factors of the GDP nowcast and the industry models, and which data series each one explains.">
+<title>Models · KEYNES</title>
+<meta name="description" content="Every model on the site by name: the production models, each with its own page, the reference models and the benchmarks.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="assets/style.css">
@@ -20,7 +20,7 @@
     <a href="index.html">Home</a>
     <a href="nowcast.html">GDP nowcast</a>
     <a href="industries.html">Industry models</a>
-    <a href="structure.html">Model structure</a>
+    <a href="structure.html">Models</a>
     <a href="data.html">Data</a>
     <a href="methods.html">Methods</a>
     <a href="updates.html">Updates</a>
@@ -28,47 +28,73 @@
 </div></header>
 
 <main><div class="wrap">
-  <h1>Model structure</h1>
-  <p class="lead">Both models explain many data series with a few hidden <strong>factors</strong>. This page shows
-    what each factor stands for and which series it drives.</p>
+  <h1>Models</h1>
+  <p class="lead">Every model on this site has a name. The models <strong>in production</strong> publish forecasts,
+    and each has its own page with an overview, its latest forecasts and its accuracy.</p>
   <div class="prose">
-    <p>Think of a factor as a hidden index, like an unpublished "state of the economy" number. Each data series is
-      modeled as a mix of a few factors plus noise of its own. A series' <strong>loading</strong> on a factor is how
-      strongly it moves with that factor. The models only allow the loadings that make economic sense: a jobs series
-      can load on the labor factor, a steel series on the steel factor, and so on.</p>
+    <p>Names read <code>FAMILY-VERSION-MODIFIER</code>: <code>GDP</code> for the GDP nowcast, <code>IND</code> for the
+      industry models; <code>P5</code> marks the price version of an industry model, which forecasts prices as plain
+      growth rates.</p>
+  </div>
+  <nav class="toc">
+    <a href="#production">In production</a>
+    <a href="#reference">Reference models</a>
+    <a href="#benchmarks">Benchmarks</a>
+    <a href="#factors">How the models work</a>
+  </nav>
+
+  <h2 id="production">In production <span class="muted" id="prod-count"></span></h2>
+  <div class="table-wrap"><table id="prod-gdp">
+    <thead><tr><th>Model</th><th>What it forecasts</th><th>Page</th></tr></thead>
+    <tbody><tr><td style="white-space:nowrap"><a href="nowcast.html"><strong>GDP-2</strong></a></td>
+      <td>This quarter's real GDP growth, updated weekly, from 35 national series; our replica of the New York Fed's
+        Staff Nowcast 2.0</td><td><a href="nowcast.html">GDP nowcast →</a></td></tr></tbody>
+  </table></div>
+  <div class="prose"><p>The 13 industry models forecast each industry's own monthly series 0 to 12 months ahead. Each
+    industry has one model with two published versions: activity, and prices measured as plain growth rates.</p></div>
+  <div class="table-wrap"><table id="prod-ind"></table></div>
+
+  <h2 id="reference">Reference models</h2>
+  <div class="prose"><p>These models are not published as forecasts. They are the baselines and building blocks the
+    production models are measured against; their accuracy is on the <a href="industries.html#national">Industry
+    models</a> page.</p></div>
+  <h3 id="ind-g">IND-G <span class="muted">· general model</span></h3>
+  <div class="prose"><p>The 126 national monthly series of FRED-MD and 4 economy-wide factors. Every industry model is
+    this model plus one industry's series and two industry factors, so IND-G is the baseline for the question "does
+    information about an industry help?" <a href="industries.html#national">Accuracy on national indicators →</a></p></div>
+  <h3 id="ind-econ">IND-ECON <span class="muted">· economy model</span></h3>
+  <div class="prose">
+    <p>All 13 industries at once: 243 monthly series (126 national series and 117 industry activity series) and 17
+      factors, 4 economy-wide and one for each industry. Its forecasts of industry activity series are compared with
+      each industry model's on that model's page, and it is tested on national indicators on the <a href="industries.html#national">Industry
+      models</a> page. Its factors are shown below.</p>
   </div>
 
-  <div class="tabs" role="tablist">
-    <button data-tab="gdp" role="tab">GDP nowcast model</button>
-    <button data-tab="m1" role="tab">Industry (economy) model</button>
+  <h2 id="benchmarks">Benchmarks</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Name</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AR</strong></td><td>Autoregression: forecasts a series from its own recent past. Every model is
+        scored against it ("% better than the AR").</td></tr>
+      <tr><td><strong>RW</strong></td><td>Random walk: no change from the latest value.</td></tr>
+      <tr><td><strong>DI</strong></td><td>The Stock–Watson diffusion-index forecast: a regression on principal-component factors.</td></tr>
+      <tr><td><strong>BR</strong></td><td>Bridge regression (general model only).</td></tr>
+      <tr><td><strong>NYFED</strong></td><td>The New York Fed's published Staff Nowcasts, 2016–2019, compared with GDP-2.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="factors">How the models work: factors</h2>
+  <div class="prose">
+    <p>Every model here explains many data series with a few hidden <strong>factors</strong>. Think of a factor as a
+      hidden index, like an unpublished "state of the economy" number. Each data series is modeled as a mix of a few
+      factors plus noise of its own. A series' <strong>loading</strong> on a factor is how strongly it moves with that
+      factor, and the models only allow the loadings that make economic sense: a jobs series can load on the labor
+      factor, a steel series on the steel factor. Which series drive which factor is shown on each model's page
+      (<a href="nowcast.html#structure">GDP-2</a>, for example) and, for the economy model IND-ECON, below.</p>
   </div>
 
-  <section id="gdp">
-    <div class="prose">
-      <p>The GDP nowcast model has 35 series and six hidden components:</p>
-      <ul>
-        <li><strong>Trend</strong>: the economy's long-run growth rate, which drifts slowly. Only GDP and GDI load on it.</li>
-        <li><strong>Global</strong>: the overall pace of real activity. Almost every series loads on it.</li>
-        <li><strong>Soft</strong>: business sentiment, from regional Fed manufacturing and services surveys.</li>
-        <li><strong>Nominal</strong>: prices and series measured in dollars.</li>
-        <li><strong>Labor</strong>: the job market.</li>
-        <li><strong>COVID</strong>: a factor that exists only from March to September 2020, to absorb the pandemic's extreme swings.</li>
-      </ul>
-      <p>Bars show the estimated loading of each series on each factor (posterior mean, standardized data). Blue bars
-        move with the factor, red bars against it. An empty cell means the model does not allow that loading.</p>
-    </div>
-    <p class="small muted" id="gdp-fit"></p>
-    <div class="table-wrap"><table class="matrix" id="gdp-matrix"></table></div>
-  </section>
-
-  <section id="m1" hidden>
-    <div class="prose">
-      <p>The economy model has 243 monthly series: 126 national series from FRED-MD and 117 activity series from 13
-        industries. It has 17 factors: 4 economy-wide ones and one for each industry. The economy-wide factors are
-        statistical constructs; their names come from the series each one explains best.</p>
-    </div>
-
-    <h2>What one factor explains</h2>
+  <section id="m1">
+    <h3>IND-ECON: what one factor explains</h3>
     <div class="controls">
       <label for="f-select">Factor</label>
       <select id="f-select"></select>
@@ -86,7 +112,7 @@
         that a chosen anchor series loads positively.</figcaption>
     </figure>
 
-    <h2>How much the factors explain, series by series</h2>
+    <h3>IND-ECON: how much the factors explain, series by series</h3>
     <div class="controls">
       <label for="g-select">Group</label>
       <select id="g-select"></select>
@@ -98,7 +124,7 @@
       <div class="plot" id="g-bars"></div>
     </figure>
 
-    <h2>How the factors relate to each other</h2>
+    <h3>IND-ECON: how the factors relate to each other</h3>
     <figure class="chart">
       <p class="chart-title">Industry factors are nearly uncorrelated with each other</p>
       <p class="chart-sub">Correlation of monthly factor values, 2000–2026 excluding March–December 2020</p>

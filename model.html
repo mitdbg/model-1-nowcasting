@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Industry Model · KEYNES</title>
+<meta name="description" content="One industry model: its latest forecasts, its accuracy against the AR benchmark, its structure and its data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+<script defer src="assets/common.js"></script>
+<script defer src="assets/model.js"></script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html"><img src="assets/keynes.svg" alt="K.E.Y.N.E.S." width="176" height="45"><span class="kn"><b>K</b>nowledge <b>E</b>ngine <b>Y</b>ielding <b>N</b>onstop <b>E</b>conomic <b>S</b>cenarios</span></a>
+  <nav class="main">
+    <a href="index.html">Home</a>
+    <a href="nowcast.html">GDP nowcast</a>
+    <a href="industries.html">Industry models</a>
+    <a href="structure.html">Models</a>
+    <a href="data.html">Data</a>
+    <a href="methods.html">Methods</a>
+    <a href="updates.html">Updates</a>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+  <p class="small muted crumbs"><a href="structure.html">Models</a> › <a href="structure.html#production">Production</a> › <span id="m-crumb"></span></p>
+  <h1 id="m-title">Industry model</h1>
+  <p class="lead" id="m-lead"></p>
+  <p class="small" id="m-sibling"></p>
+  <nav class="toc">
+    <a href="#overview">Overview</a>
+    <a href="#forecasts">Latest forecasts</a>
+    <a href="#accuracy">Accuracy</a>
+    <a href="#structure">What the factors explain</a>
+    <a href="#data">Data</a>
+  </nav>
+
+  <h2 id="overview">Overview</h2>
+  <div class="grid three" id="m-stats"></div>
+  <div class="prose" id="m-overview"></div>
+
+  <h2 id="forecasts">Latest forecasts</h2>
+  <div class="prose"><p id="m-fc-intro"></p></div>
+  <div class="table-wrap"><table class="fc-table" id="m-fc"></table></div>
+  <p class="small muted" id="m-fc-note"></p>
+
+  <h2 id="accuracy">Accuracy</h2>
+  <div class="prose"><p id="m-acc-intro"></p></div>
+  <div class="table-wrap"><table id="m-acc"></table></div>
+  <p class="small muted" id="m-acc-note"></p>
+
+  <h2 id="structure">What the factors explain</h2>
+  <div class="prose"><p id="m-str-intro"></p></div>
+  <figure class="chart">
+    <p class="chart-sub">Share of each series' monthly variation explained by each factor; the rest is noise specific to the series</p>
+    <div class="legend" id="m-shares-legend"></div>
+    <div class="plot" id="m-shares"></div>
+  </figure>
+  <figure class="chart">
+    <p class="chart-title" id="m-factor-title"></p>
+    <p class="chart-sub">Estimated factor value each month, standard deviations; grey bands are recessions</p>
+    <div class="plot" id="m-factor"></div>
+    <figcaption id="m-factor-cap"></figcaption>
+  </figure>
+
+  <h2 id="data">Data</h2>
+  <div class="prose"><p id="m-data-intro"></p></div>
+  <div class="table-wrap"><table id="m-data"></table></div>
+
+  <details class="deep">
+    <summary><span class="kicker">For economists</span>Estimation and testing</summary>
+    <ul id="m-detail"></ul>
+  </details>
+</div></main>
+
+<footer class="site"><div class="wrap">
+  K.E.Y.N.E.S. (Knowledge Engine Yielding Nonstop Economic Scenarios) · statistical research models, not official forecasts. Data from FRED-MD (McCracken and Ng),
+  FRED and ALFRED (Federal Reserve Bank of St. Louis).
+</div></footer>
+</body>
+</html>

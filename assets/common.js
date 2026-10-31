@@ -104,7 +104,8 @@ async function updatedNote() {
 
 document.addEventListener("DOMContentLoaded", () => {
   updatedNote();
-  const page = location.pathname.split("/").pop() || "index.html";
+  let page = location.pathname.split("/").pop() || "index.html";
+  if (page === "model.html") page = "structure.html";       // a model's page sits under Models
   document.querySelectorAll("nav.main a").forEach((a) => {
     if (a.getAttribute("href") === page) a.setAttribute("aria-current", "page");
   });
@@ -243,4 +244,45 @@ function sparkline(row, w = 150, h = 36) {
     <path d="${line(model)}" fill="none" stroke="${col("accent")}" stroke-width="2"/>
     <circle cx="${x(lastPt[0])}" cy="${y(row.last)}" r="2.5" fill="${col("ink")}"/>
   </svg>`;
+}
+
+const FC_H = [0, 1, 3, 6, 12];
+
+// One row of a forecast table: series, sparkline, latest month, model and AR at each horizon, track record.
+// sub: the small line under the series name (defaults to its ID, linked to FRED).
+function fcRow(r, sub = "") {
+  const cells = FC_H.map((h) => {
+    const m = (r.model || []).find((x) => x.h === h), a = (r.ar || []).find((x) => x.h === h);
+    const tip = m ? `${MONTH(m.month)}: model ${fcValue(m, r.unit)}` + (m.lo != null ? ` (68% range ${fcValue({ value: m.lo }, r.unit)} to ${fcValue({ value: m.hi }, r.unit)})` : "") + `, AR ${fcValue(a, r.unit)}` : "";
+    return `<td class="num" title="${tip}"><span class="val">${fcValue(m, r.unit)}</span><span class="ar">AR ${fcValue(a, r.unit)}</span></td>`;
+  }).join("");
+  const g = r.record, cls = g == null ? "muted" : g >= 2 ? "good" : g <= -2 ? "bad" : "";
+  const id = r.fred ? `<a href="${r.fred}" target="_blank" rel="noopener">${r.target}</a>` : r.target;
+  return `<tr><td><strong>${r.name}</strong><br><span class="muted small">${id}${sub ? ` · ${sub}` : ""}</span></td>
+    <td>${sparkline(r)}</td><td class="num small">${MONTH(r.last_month)}</td>${cells}
+    <td class="num ${cls}" title="Errors as a nowcast, relative to the AR's, on data as first published">${g == null ? "–" : `${g > 0 ? "+" : ""}${g.toFixed(0)}%`}</td></tr>`;
+}
+
+const fcHead = (name = "<th>Series</th>", record = '<th class="num">Track<br>record</th>') =>
+  `<thead><tr>${name}<th>History and forecast</th><th class="num">Latest</th>
+    ${FC_H.map((h) => `<th class="num">${h === 0 ? "0 (now)" : h}</th>`).join("")}${record}</tr></thead>`;
+
+const fcKey = (model = "industry model") =>
+  `<span class="fc-key"><i style="border-color:${col("ink-2")}"></i>published data, last 3 years</span>` +
+  `<span class="fc-key"><i style="border-color:${col("accent")}"></i>${model} (shaded: 68% range)</span>` +
+  `<span class="fc-key"><i style="border-color:${col("ink-3")};border-top-style:dashed"></i>AR benchmark</span>`;
+
+// Track record of a forecast row: % smaller nowcast errors than the AR's, real-time span (model1_accuracy)
+const fcRecord = (A, r) => {
+  const x = A.sectors.find((a) => a.sector === r.sector && a.target === r.target && a.horizon === 0
+    && a.span === "real-time" && a.comparison === r.comparison);
+  return x && x.rel != null ? Math.round((1 - x.rel) * 1000) / 10 : null;
+};
+
+// ---- model names (data/models.json): a link to a model's page
+
+function modelLink(M, name) {
+  if (name === "IND-*") return `<a href="structure.html#production">all industry models</a>`;
+  const m = [...M.production, ...M.reference].find((x) => x.name === name);
+  return m ? `<a href="${m.page}" title="${m.label}">${name}</a>` : name;
 }

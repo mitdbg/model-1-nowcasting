@@ -18,7 +18,7 @@
     <a href="index.html">Home</a>
     <a href="nowcast.html">GDP nowcast</a>
     <a href="industries.html">Industry models</a>
-    <a href="structure.html">Model structure</a>
+    <a href="structure.html">Models</a>
     <a href="data.html">Data</a>
     <a href="methods.html">Methods</a>
     <a href="updates.html">Updates</a>
@@ -32,30 +32,30 @@
 
   <h2>Where the data come from</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Data set</th><th>What it is</th><th>Used for</th></tr></thead>
+    <thead><tr><th>Data set</th><th>What it is</th><th>Used in</th></tr></thead>
     <tbody>
       <tr><td><a href="https://www.stlouisfed.org/research/economists/mccracken/fred-databases" target="_blank" rel="noopener">FRED-MD</a></td>
         <td>About 126 monthly US macro series (output, jobs, housing, orders, money, interest rates, prices, stock
           prices), maintained by Michael McCracken and Serena Ng at the St. Louis Fed.</td>
-        <td>The general factors of every industry model.</td></tr>
+        <td><a href="structure.html#production">every industry model</a>; <a href="structure.html#ind-g">IND-G</a>, <a href="structure.html#ind-econ">IND-ECON</a></td></tr>
       <tr><td>FRED-MD vintages</td><td>Every monthly snapshot of FRED-MD since August 1999, each as it was published.</td>
-        <td>The real-time test: each forecast uses only the snapshot available at its date.</td></tr>
+        <td><a href="structure.html#production">every industry model</a>; <a href="structure.html#ind-g">IND-G</a>, <a href="structure.html#ind-econ">IND-ECON</a> (real-time tests)</td></tr>
       <tr><td>Industry series (FRED)</td><td>192 monthly series for 13 industries, none of them in FRED-MD: production,
-          capacity use, orders, shipments, sales, jobs and prices.</td><td>The industry models and the economy model.</td></tr>
+          capacity use, orders, shipments, sales, jobs and prices.</td><td><a href="structure.html#production">every industry model</a> (each its own industry's series); <a href="structure.html#ind-econ">IND-ECON</a> (activity series)</td></tr>
       <tr><td>GDP nowcast series (FRED)</td><td>35 monthly and quarterly series from the New York Fed's Staff Nowcast 2.0 list. Four Dallas and
           Philadelphia Fed survey indexes stand in for the ISM surveys, which are not on FRED.</td>
-        <td>The GDP nowcast.</td></tr>
+        <td><a href="nowcast.html">GDP-2</a></td></tr>
       <tr><td><a href="https://alfred.stlouisfed.org/" target="_blank" rel="noopener">ALFRED</a></td>
         <td>The St. Louis Fed's archive of every past release of a FRED series.</td>
-        <td>Real-time versions of the industry and GDP nowcast series. Where a series has no archive for a date, it is
-          left out (GDP nowcast) or cut off at that date (industry models, labeled "pseudo-real-time").</td></tr>
+        <td><a href="nowcast.html">GDP-2</a>; <a href="structure.html#production">every industry model</a> (real-time versions of their series)</td></tr>
       <tr><td>BEA GDP estimates</td><td>The advance (first), third and latest estimates of real GDP growth, from ALFRED.</td>
-        <td>The "truth" each GDP nowcast is scored against.</td></tr>
+        <td><a href="nowcast.html">GDP-2</a> (scoring)</td></tr>
       <tr><td>New York Fed Nowcasting Reports</td><td>The nowcasts the New York Fed published weekly, 2016–2019.</td>
-        <td>A head-to-head comparison with our replica.</td></tr>
+        <td><a href="nowcast.html">GDP-2</a> (comparison)</td></tr>
     </tbody>
   </table></div>
-  <p class="small muted">This site shows model results and series descriptions only. For the data values themselves,
+  <p class="small muted">Where a series has no ALFRED archive for a date, GDP-2 leaves it out and the industry models
+    cut it off at that date ("pseudo-real-time"). This site shows model results and series descriptions only. For the data values themselves,
     follow the links to FRED.</p>
 
   <h2>Every series</h2>
@@ -64,7 +64,7 @@
     <label for="f-src">Source</label>
     <select id="f-src"><option value="">All</option></select>
     <label for="f-used">Used in</label>
-    <select id="f-used"><option value="">Both models</option><option>GDP nowcast</option><option>Industry models</option></select>
+    <select id="f-used"><option value="">All models</option><option value="GDP-2">GDP-2</option><option value="IND">Industry models</option></select>
     <span class="muted small" id="count"></span>
   </div>
   <div class="table-wrap" style="max-height: 70vh"><table id="tbl"></table></div>

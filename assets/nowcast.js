@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const [d, s] = await Promise.all([SITE.data("nowcast"), SITE.data("nowcast_structure")]);
     D = d;
+    gdpMatrix(s);
     SITE.seriesNames = Object.fromEntries(s.series.map((x) => [x.id, x.name]));
   } catch (e) { showError("hist-chart", e); return; }
   const Q = D.quarters;
@@ -316,4 +317,36 @@ function shares(D) {
       .map((k) => `<td class="num">${r[k]}${unit}</td>`).join("")}</tr>`;
   });
   t.innerHTML = html + "</tbody>";
+}
+
+// ------------------------------------------------------------------ GDP model: loading matrix
+
+function gdpMatrix(S) {
+  document.getElementById("gdp-fit").textContent =
+    `Fit of ${S.fit_date}, on ${S.months} months of data from ${S.start}.`;
+  const cols = [["trend", "Trend"], ["global", "Global"], ["soft", "Soft"], ["nominal", "Nominal"], ["labor", "Labor"], ["covid", "COVID"]];
+  // scale bars by a high quantile so a few large loadings do not shrink the rest to dots
+  const maxL = d3.quantile(S.series.flatMap((s) => Object.values(s.loadings).map(Math.abs)), 0.95);
+  const maxC = d3.quantile(S.series.map((s) => Math.abs(s.covid)), 0.95);
+  const bar = (v, max) => {
+    const w = Math.max(3, Math.min(60, Math.round(Math.abs(v) / max * 56)));
+    return `<span class="bar${v < 0 ? " neg" : ""}" style="width:${w}px"></span>`;
+  };
+  let html = `<thead><tr><th>Series</th><th>Frequency</th>${cols.map(([, l]) => `<th class="cell">${l}</th>`).join("")}</tr></thead><tbody>`;
+  const cats = [...new Set(S.series.map((s) => s.category))];
+  for (const c of cats) {
+    html += `<tr><td colspan="${cols.length + 2}" class="muted small" style="padding-top:14px"><strong>${CAT_LABEL[c] || c}</strong></td></tr>`;
+    for (const s of S.series.filter((x) => x.category === c)) {
+      const name = s.fred ? `<a href="${s.fred}" target="_blank" rel="noopener">${s.name}</a>` : s.name;
+      html += `<tr><td>${name}${s.stand_in ? ' <span class="tag">ISM stand-in</span>' : ""}</td><td>${s.freq === "Q" ? "quarterly" : "monthly"}</td>`;
+      for (const [k, label] of cols) {
+        if (k === "trend") html += s.trend ? `<td class="cell" title="Trend: loading fixed at 1">${bar(1, 1)}</td>` : `<td class="cell off">·</td>`;
+        else if (k === "covid") html += `<td class="cell" title="COVID: ${fmt.n(s.covid, 2)}">${bar(s.covid, maxC)}</td>`;
+        else if (k in s.loadings) html += `<td class="cell" title="${label}: ${fmt.n(s.loadings[k], 3)}">${bar(s.loadings[k], maxL)}</td>`;
+        else html += `<td class="cell off">·</td>`;
+      }
+      html += "</tr>";
+    }
+  }
+  document.getElementById("gdp-matrix").innerHTML = html + "</tbody>";
 }

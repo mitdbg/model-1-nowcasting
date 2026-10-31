@@ -75,11 +75,7 @@ function miniGdp(Q) {
 
 // The industry series the models have forecast best (one per industry), with their latest forecasts
 function miniIndustries(A, F) {
-  const record = (r) => {
-    const x = A.sectors.find((a) => a.sector === r.sector && a.target === r.target && a.horizon === 0
-      && a.span === "real-time" && a.comparison === r.comparison);
-    return x && x.rel != null ? Math.round((1 - x.rel) * 100) : null;
-  };
+  const record = (r) => { const g = fcRecord(A, r); return g == null ? null : Math.round(g); };
   const seen = new Set();
   const rows = F.rows.filter((r) => r.block === "activity" && r.history)
     .map((r) => ({ ...r, record: record(r) })).filter((r) => r.record != null)
@@ -91,7 +87,7 @@ function miniIndustries(A, F) {
   };
   document.getElementById("mini-ind").innerHTML =
     `<thead><tr><th>Series</th><th></th><th class="num">Now</th><th class="num">+3 mo</th></tr></thead><tbody>` +
-    rows.map((r) => `<tr><td><strong>${r.name}</strong><br><span class="muted small">${A.labels[r.sector]} · ${r.record > 0 ? "+" : ""}${r.record}% vs AR</span></td>
+    rows.map((r) => `<tr><td><strong>${r.name}</strong><br><span class="muted small"><a href="model.html?m=IND-${r.sector.toUpperCase()}">${A.labels[r.sector]}</a> · ${r.record > 0 ? "+" : ""}${r.record}% vs AR</span></td>
       <td>${sparkline(r, 110, 32)}</td>${cell(r, 0)}${cell(r, 3)}</tr>`).join("") + "</tbody>";
   document.getElementById("mini-ind-cap").innerHTML =
     `Six of the series the industry models forecast best (one per industry): the last three years (grey), the model's

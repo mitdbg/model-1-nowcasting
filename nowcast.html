@@ -23,7 +23,7 @@
     <a href="index.html">Home</a>
     <a href="nowcast.html">GDP nowcast</a>
     <a href="industries.html">Industry models</a>
-    <a href="structure.html">Model structure</a>
+    <a href="structure.html">Models</a>
     <a href="data.html">Data</a>
     <a href="methods.html">Methods</a>
     <a href="updates.html">Updates</a>
@@ -31,7 +31,8 @@
 </div></header>
 
 <main><div class="wrap">
-  <h1>The GDP nowcast</h1>
+  <p class="small muted crumbs"><a href="structure.html">Models</a> › <a href="structure.html#production">Production</a> › GDP-2</p>
+  <h1>The GDP nowcast <span class="muted">· GDP-2</span></h1>
   <p class="lead">An estimate of the current quarter's real GDP growth, updated every Friday from the economic data
     published that week. The model is our replica of the New York Fed's <em>Staff Nowcast 2.0</em>, rebuilt from
     public data.</p>
@@ -40,6 +41,7 @@
     <a href="#quarter">Explore one quarter</a>
     <a href="#accuracy">How accurate is it?</a>
     <a href="#ingredients">What makes it work</a>
+    <a href="#structure">Which series drive which factor</a>
     <a href="#model">The model in detail</a>
   </nav>
 
@@ -172,12 +174,28 @@
       Stochastic volatility mainly changes the error bands, not the nowcast itself.</figcaption>
   </figure>
 
+  <h2 id="structure">Which series drive which factor</h2>
+  <div class="prose">
+    <p>GDP-2 has 35 series and six hidden components:</p>
+    <ul>
+      <li><strong>Trend</strong>: the economy's long-run growth rate, which drifts slowly. Only GDP and GDI load on it.</li>
+      <li><strong>Global</strong>: the overall pace of real activity. Almost every series loads on it.</li>
+      <li><strong>Soft</strong>: business sentiment, from regional Fed manufacturing and services surveys.</li>
+      <li><strong>Nominal</strong>: prices and series measured in dollars.</li>
+      <li><strong>Labor</strong>: the job market.</li>
+      <li><strong>COVID</strong>: a factor that exists only from March to September 2020, to absorb the pandemic's extreme swings.</li>
+    </ul>
+    <p>Bars show the estimated loading of each series on each factor (posterior mean, standardized data). Blue bars
+      move with the factor, red bars against it. An empty cell means the model does not allow that loading.</p>
+  </div>
+  <p class="small muted" id="gdp-fit"></p>
+  <div class="table-wrap"><table class="matrix" id="gdp-matrix"></table></div>
+
   <h2 id="model">The model in detail</h2>
   <div class="prose">
     <p>The model has four general factors (a <em>global</em> factor that every real-activity series loads on, and
       factors for <em>surveys</em>, <em>nominal</em> series such as prices and dollar values, and <em>labor</em>),
-      a factor that exists only during the 2020 pandemic, and a slowly moving trend in long-run growth. The
-      <a href="structure.html#gdp">Model structure</a> page shows which series load on which factor.</p>
+      a factor that exists only during the 2020 pandemic, and a slowly moving trend in long-run growth. <a href="#structure">Which series drive which factor</a> shows the loadings.</p>
   </div>
 
   <details class="deep">

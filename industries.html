@@ -23,7 +23,7 @@
     <a href="index.html">Home</a>
     <a href="nowcast.html">GDP nowcast</a>
     <a href="industries.html">Industry models</a>
-    <a href="structure.html">Model structure</a>
+    <a href="structure.html">Models</a>
     <a href="data.html">Data</a>
     <a href="methods.html">Methods</a>
     <a href="updates.html">Updates</a>
@@ -39,7 +39,7 @@
     <a href="#idea">The idea</a>
     <a href="#family">Three models</a>
     <a href="#industries">Industry by industry</a>
-    <a href="#explore">Explore one industry</a>
+    <a href="#explore">One page per model</a>
     <a href="#national">National indicators</a>
     <a href="#detail">The model in detail</a>
   </nav>
@@ -73,20 +73,20 @@
   <div class="table-wrap"><table>
     <thead><tr><th>Model</th><th>Data</th><th>Factors</th><th>The question it answers</th><th>Results</th></tr></thead>
     <tbody>
-      <tr><td><strong>General model</strong><br><span class="muted small">the baseline</span></td>
+      <tr><td><strong>General model</strong> <a href="structure.html#ind-g">IND-G</a><br><span class="muted small">the baseline · reference</span></td>
         <td>About 126 national monthly series (the FRED-MD data set)</td>
         <td>4 economy-wide factors</td><td>Do economy-wide factors forecast better than a simple benchmark?</td>
         <td><a href="#national">National indicators</a></td></tr>
-      <tr><td><strong>Industry models</strong><br><span class="muted small">13 separate models, one per industry</span></td>
+      <tr><td><strong>Industry models</strong> IND-&lt;INDUSTRY&gt;, IND-&lt;INDUSTRY&gt;-P5<br><span class="muted small">13 separate models, one per industry, each in an activity and a price version · production</span></td>
         <td>The general data plus 9–19 series from one industry</td>
         <td>The 4 economy-wide factors plus 2 for the industry: its activity and its prices</td>
         <td>Does information about an industry improve forecasts for that industry?</td>
-        <td><a href="#industries">Industry by industry</a>, <a href="#explore">Explore one industry</a></td></tr>
-      <tr><td><strong>Economy model</strong><br><span class="muted small">one model, all 13 industries at once</span></td>
+        <td><a href="#industries">Industry by industry</a>; <a href="#explore">one page per model</a></td></tr>
+      <tr><td><strong>Economy model</strong> <a href="structure.html#ind-econ">IND-ECON</a><br><span class="muted small">one model, all 13 industries at once · reference</span></td>
         <td>The general data plus the activity series of all 13 industries (243 series)</td>
         <td>4 economy-wide factors plus 13 industry factors</td><td>Do industry factors improve the national forecasts?</td>
         <td><a href="#national">National indicators</a>; its factors over time are on
-          <a href="structure.html#m1">Model structure</a></td></tr>
+          <a href="structure.html#ind-econ">Models</a></td></tr>
     </tbody>
   </table></div>
   <div class="callout">
@@ -117,15 +117,10 @@
       past already predicts well (health care, leisure).</p>
   </div>
 
-  <h2 id="explore">Explore one industry <span class="muted">· industry and economy models</span></h2>
-  <div class="prose"><p>Every series of one industry, as forecast by its own industry model and, for activity series, by the
-    economy model, which estimates all 13 industries together.</p></div>
-  <div class="controls">
-    <label for="ind-select">Industry</label>
-    <select id="ind-select"></select>
-  </div>
-  <div class="table-wrap"><table id="ind-table"></table></div>
-  <p class="small muted" id="ind-table-note"></p>
+  <h2 id="explore">One page per model</h2>
+  <div class="prose"><p>Each industry model has two published versions, activity and prices, and each version has its own
+    page: its latest forecasts, its accuracy target by target, what its factors explain, and its data.</p></div>
+  <div class="table-wrap"><table id="ind-pages"></table></div>
 
   <h2 id="national">National indicators <span class="muted">· general and economy models</span></h2>
   <div class="prose">

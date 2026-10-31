@@ -218,3 +218,7 @@ details.update > summary { cursor: pointer; }
 .mini-fc { font-size: 0.86rem; }
 .mini-fc td:first-child { min-width: 0; }
 .mini-fc th, .mini-fc td { padding: 5px 5px; }
+.crumbs { margin: 0 0 0.4rem; }
+.crumbs a { text-decoration: none; }
+/* model names never break at their hyphens */
+a[href^="model.html"], a[href^="structure.html#ind"] { white-space: nowrap; }

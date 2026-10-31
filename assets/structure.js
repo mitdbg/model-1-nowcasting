@@ -1,50 +1,34 @@
 const PLOT_STYLE = { background: "transparent", fontSize: "12px" };
 const GENERAL = ["g1", "g2", "g3", "g4"];
 
+// old links: structure.html#gdp (the GDP loading matrix, now on the GDP-2 page) and #m1 (the economy model)
+if (location.hash === "#gdp") location.replace("nowcast.html#structure");
+
 document.addEventListener("DOMContentLoaded", async () => {
-  tabs(document.querySelector(".tabs"));
   try {
-    const [g, m] = await Promise.all([SITE.data("nowcast_structure"), SITE.data("model1_structure")]);
+    const [M, m] = await Promise.all([SITE.data("models"), SITE.data("model1_structure")]);
+    production(M);
     const mv = document.getElementById("m1-vintage");
     if (mv) mv.textContent = new Date(`${m.vintage}-15T12:00:00`).toLocaleDateString("en-US", { month: "long", year: "numeric" });
-    gdpMatrix(g);
-    // the economy-model charts need a visible container to measure their width
-    const drawM1 = () => { if (!drawM1.done && !document.getElementById("m1").hidden) { drawM1.done = true; model1(m); } };
-    document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", drawM1));
-    drawM1();
-  } catch (e) { showError("gdp-matrix", e); }
+    model1(m);
+    if (location.hash === "#m1") document.getElementById("ind-econ").scrollIntoView();
+  } catch (e) { showError("prod-ind", e); }
 });
 
-// ------------------------------------------------------------------ GDP model: loading matrix
+// ------------------------------------------------------------------ production models
 
-function gdpMatrix(S) {
-  document.getElementById("gdp-fit").textContent =
-    `Fit of ${S.fit_date}, on ${S.months} months of data from ${S.start}.`;
-  const cols = [["trend", "Trend"], ["global", "Global"], ["soft", "Soft"], ["nominal", "Nominal"], ["labor", "Labor"], ["covid", "COVID"]];
-  // scale bars by a high quantile so a few large loadings do not shrink the rest to dots
-  const maxL = d3.quantile(S.series.flatMap((s) => Object.values(s.loadings).map(Math.abs)), 0.95);
-  const maxC = d3.quantile(S.series.map((s) => Math.abs(s.covid)), 0.95);
-  const bar = (v, max) => {
-    const w = Math.max(3, Math.min(60, Math.round(Math.abs(v) / max * 56)));
-    return `<span class="bar${v < 0 ? " neg" : ""}" style="width:${w}px"></span>`;
-  };
-  let html = `<thead><tr><th>Series</th><th>Frequency</th>${cols.map(([, l]) => `<th class="cell">${l}</th>`).join("")}</tr></thead><tbody>`;
-  const cats = [...new Set(S.series.map((s) => s.category))];
-  for (const c of cats) {
-    html += `<tr><td colspan="${cols.length + 2}" class="muted small" style="padding-top:14px"><strong>${CAT_LABEL[c] || c}</strong></td></tr>`;
-    for (const s of S.series.filter((x) => x.category === c)) {
-      const name = s.fred ? `<a href="${s.fred}" target="_blank" rel="noopener">${s.name}</a>` : s.name;
-      html += `<tr><td>${name}${s.stand_in ? ' <span class="tag">ISM stand-in</span>' : ""}</td><td>${s.freq === "Q" ? "quarterly" : "monthly"}</td>`;
-      for (const [k, label] of cols) {
-        if (k === "trend") html += s.trend ? `<td class="cell" title="Trend: loading fixed at 1">${bar(1, 1)}</td>` : `<td class="cell off">·</td>`;
-        else if (k === "covid") html += `<td class="cell" title="COVID: ${fmt.n(s.covid, 2)}">${bar(s.covid, maxC)}</td>`;
-        else if (k in s.loadings) html += `<td class="cell" title="${label}: ${fmt.n(s.loadings[k], 3)}">${bar(s.loadings[k], maxL)}</td>`;
-        else html += `<td class="cell off">·</td>`;
-      }
-      html += "</tr>";
-    }
+function production(M) {
+  const ind = M.production.filter((x) => x.kind === "industry");
+  document.getElementById("prod-count").textContent = `· ${M.production.length} models`;
+  const link = (x) => `<a href="${x.page}"><strong>${x.name}</strong></a>`;
+  let html = `<thead><tr><th>Industry</th><th>Activity</th><th>Prices</th><th class="num">Series</th></tr></thead><tbody>`;
+  for (const [sec, I] of Object.entries(M.industries)) {
+    const [act, pr] = ["activity", "prices"].map((b) => ind.find((x) => x.sector === sec && x.block === b));
+    const n = (b) => I.series.filter((s) => s.block === b).length;
+    html += `<tr><td>${I.label}</td><td>${link(act)}</td><td>${link(pr)}</td>
+      <td class="num">${n("activity")} activity, ${n("prices")} prices</td></tr>`;
   }
-  document.getElementById("gdp-matrix").innerHTML = html + "</tbody>";
+  document.getElementById("prod-ind").innerHTML = html + "</tbody>";
 }
 
 // ------------------------------------------------------------------ economy model
