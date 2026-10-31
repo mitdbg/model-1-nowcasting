@@ -32,10 +32,11 @@
 
 <main><div class="wrap">
   <h1>The industry models</h1>
-  <p class="lead">Forecasts of monthly indicators a few months ahead, for the whole economy (industrial production,
-    jobs, unemployment, prices) and for 13 industries, from steel output to freight volumes and exports.</p>
+  <p class="lead">Forecasts of monthly indicators a few months ahead: for 13 industries, from steel output to freight
+    volumes and exports, and for the economy as a whole (industrial production, jobs, unemployment, prices).</p>
   <nav class="toc">
     <a href="#idea">The idea</a>
+    <a href="#family">Three models</a>
     <a href="#industries">Industry by industry</a>
     <a href="#explore">Explore one industry</a>
     <a href="#national">National indicators</a>
@@ -45,22 +46,35 @@
   <h2 id="idea">The idea: a few hidden drivers behind many series</h2>
   <div class="prose">
     <p>Hundreds of economic statistics rise and fall together, because they respond to the same few underlying
-      forces: the business cycle, inflation pressure, interest rates, and conditions in a particular industry. The model
-      treats these forces as hidden variables, called <strong>factors</strong>, and estimates them from the data.
+      forces: the business cycle, inflation pressure, interest rates, and conditions in a particular industry. The models
+      on this page treat these forces as hidden variables, called <strong>factors</strong>, and estimate them from the data.
       Each series is explained as a weighted mix of the factors plus a part of its own. Forecasting the factors
       forward then gives a forecast of every series.</p>
-    <p>There are three versions, each adding data to the one before:</p>
+    <p><strong>How this relates to the <a href="nowcast.html">GDP nowcast</a>.</strong> The GDP nowcast is built on
+      the same idea, but it is a separate model with a different job. It estimates a single number, this quarter's GDP
+      growth, from 35 hand-picked national series, and reports its uncertainty. The models on this page forecast many
+      monthly series, 0 to 12 months ahead, from much larger data sets. They test whether detailed industry data improve
+      forecasts.</p>
   </div>
+
+  <h2 id="family">Three models: one baseline, two ways to add industry data</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Version</th><th>Data</th><th>Factors</th><th>The question it answers</th></tr></thead>
+    <thead><tr><th>Model</th><th>Data</th><th>Factors</th><th>The question it answers</th><th>Results</th></tr></thead>
     <tbody>
-      <tr><td><strong>General model</strong></td><td>About 126 national monthly series (the FRED-MD data set)</td>
-        <td>4 economy-wide factors</td><td>Do economy-wide factors forecast better than a simple benchmark?</td></tr>
-      <tr><td><strong>Industry models</strong>, one per industry</td><td>The general data plus 9–19 series from one industry</td>
-        <td>The 4 general factors plus 2 for the industry: its activity and its prices</td>
-        <td>Does information about an industry improve forecasts for that industry?</td></tr>
-      <tr><td><strong>Economy model</strong></td><td>The general data plus the activity series of all 13 industries (243 series)</td>
-        <td>4 general factors plus 13 industry factors</td><td>Do industry factors improve the national forecasts?</td></tr>
+      <tr><td><strong>General model</strong><br><span class="muted small">the baseline</span></td>
+        <td>About 126 national monthly series (the FRED-MD data set)</td>
+        <td>4 economy-wide factors</td><td>Do economy-wide factors forecast better than a simple benchmark?</td>
+        <td><a href="#national">National indicators</a></td></tr>
+      <tr><td><strong>Industry models</strong><br><span class="muted small">13 separate models, one per industry</span></td>
+        <td>The general data plus 9–19 series from one industry</td>
+        <td>The 4 economy-wide factors plus 2 for the industry: its activity and its prices</td>
+        <td>Does information about an industry improve forecasts for that industry?</td>
+        <td><a href="#industries">Industry by industry</a>, <a href="#explore">Explore one industry</a></td></tr>
+      <tr><td><strong>Economy model</strong><br><span class="muted small">one model, all 13 industries at once</span></td>
+        <td>The general data plus the activity series of all 13 industries (243 series)</td>
+        <td>4 economy-wide factors plus 13 industry factors</td><td>Do industry factors improve the national forecasts?</td>
+        <td><a href="#national">National indicators</a>; its factors over time are on
+          <a href="structure.html#m1">Model structure</a></td></tr>
     </tbody>
   </table></div>
   <div class="callout">
@@ -71,7 +85,8 @@
     nowcast), 1 the month after, and so on.
   </div>
 
-  <h2 id="industries">Industry by industry</h2>
+  <h2 id="industries">Industry by industry <span class="muted">· industry models</span></h2>
+  <div class="prose"><p>Each industry model forecasts its own industry's series. Each dot below is one of those series.</p></div>
   <div class="controls">
     <label>Months ahead</label>
     <div class="seg" id="ind-h"><button value="0">0 (nowcast)</button><button value="1">1</button><button value="3">3</button><button value="6">6</button></div>
@@ -92,7 +107,9 @@
       past already predicts well (health care, leisure).</p>
   </div>
 
-  <h2 id="explore">Explore one industry</h2>
+  <h2 id="explore">Explore one industry <span class="muted">· industry and economy models</span></h2>
+  <div class="prose"><p>Every series of one industry, as forecast by its own industry model and, for activity series, by the
+    economy model, which estimates all 13 industries together.</p></div>
   <div class="controls">
     <label for="ind-select">Industry</label>
     <select id="ind-select"></select>
@@ -100,9 +117,10 @@
   <div class="table-wrap"><table id="ind-table"></table></div>
   <p class="small muted" id="ind-table-note"></p>
 
-  <h2 id="national">National indicators</h2>
+  <h2 id="national">National indicators <span class="muted">· general and economy models</span></h2>
   <div class="prose">
-    <p>On national indicators the general model alone is about level with the AR benchmark. Its forecasts help
+    <p>Here the general model and the economy model forecast the main national series, without and with the
+      13 industry factors. On national indicators the general model alone is about level with the AR benchmark. Its forecasts help
       in recessions but lose a little in long expansions, and 2013–2026 is mostly expansion. Averaging a model's
       forecast with the AR's ("+ AR") usually beats both. With all 13 industry factors, the economy model combined with
       the AR beats the AR on industrial production at every horizon.</p>
