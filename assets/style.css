@@ -202,3 +202,16 @@ details.update > summary { cursor: pointer; }
 .update-body { padding: 4px 0 10px; }
 .update-body h2 { font-size: 1.05rem; margin: 1.2rem 0 0.4rem; padding: 0; }
 .update-body table { margin: 0.4rem 0 0.8rem; }
+
+/* industry page: latest forecasts */
+.fc-table td { vertical-align: middle; }
+.fc-table th.sortable { cursor: pointer; user-select: none; }
+.fc-table th.sortable:hover { color: var(--accent); }
+.fc-table .ar { display: block; color: var(--ink-3); font-size: 0.78rem; font-weight: 400; }
+.fc-table .val { font-weight: 600; }
+.fc-table .group td { padding-top: 14px; font-weight: 600; color: var(--ink-2); border-bottom: 1px solid var(--line); }
+.fc-table svg.spark { display: block; overflow: visible; }
+.fc-key { display: inline-flex; align-items: center; gap: 4px; margin-right: 12px; }
+.fc-key i { display: inline-block; width: 16px; height: 0; border-top: 2px solid; }
+.fc-table td:first-child { min-width: 200px; }
+.fc-table th, .fc-table td { padding-left: 7px; padding-right: 7px; }

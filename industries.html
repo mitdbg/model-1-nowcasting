@@ -35,6 +35,7 @@
   <p class="lead">Forecasts of monthly indicators a few months ahead: for 13 industries, from steel output to freight
     volumes and exports, and for the economy as a whole (industrial production, jobs, unemployment, prices).</p>
   <nav class="toc">
+    <a href="#forecasts">Latest forecasts</a>
     <a href="#idea">The idea</a>
     <a href="#family">Three models</a>
     <a href="#industries">Industry by industry</a>
@@ -42,6 +43,17 @@
     <a href="#national">National indicators</a>
     <a href="#detail">The model in detail</a>
   </nav>
+
+  <h2 id="forecasts">Latest forecasts, series by series <span class="muted">· industry models</span></h2>
+  <div class="prose"><p id="fc-intro">Each industry model's forecast for every series it targets, next to the AR benchmark's.</p></div>
+  <div class="controls">
+    <label>Sort by</label>
+    <div class="seg" id="fc-sort"><button value="industry">Industry</button><button value="name">Name</button><button value="record">Track record</button></div>
+    <label>Series</label>
+    <div class="seg" id="fc-block"><button value="all">All</button><button value="activity">Activity</button><button value="prices">Prices</button></div>
+  </div>
+  <div class="table-wrap"><table class="fc-table" id="fc-table"></table></div>
+  <p class="small muted" id="fc-note"></p>
 
   <h2 id="idea">The idea: a few hidden drivers behind many series</h2>
   <div class="prose">
