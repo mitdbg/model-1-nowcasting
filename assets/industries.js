@@ -111,37 +111,6 @@ function national(A) {
   segmented(document.getElementById("nat-sub"), (v) => { state.sub = v; draw(); })("full");
 }
 
-const MONTH = (m) => new Date(`${m}-15T12:00:00`).toLocaleDateString("en-US", { month: "short", year: "numeric" });
-
-// A forecast in reporting units: % change from the latest value, or the level (capacity utilization)
-const fcValue = (x, unit) => x == null || x.value == null ? "–"
-  : unit === "level" ? x.value.toFixed(1) : `${fmt.signed(Math.round(x.value * 10) / 10 || 0, 1)}${unit === "cum" ? "%" : ""}`;
-
-function sparkline(row) {
-  const w = 150, h = 36, pad = 3;
-  const hist = (row.history || []).map(([m, v]) => [new Date(`${m}-15`), v]);
-  const path = (k) => (row[k] || []).map((x) => [new Date(`${x.month}-15`), x.path]);
-  const start = hist.length ? [[hist[hist.length - 1][0], row.last]] : [];
-  const model = start.concat(path("model")), ar = start.concat(path("ar"));
-  const band = (row.model || []).filter((x) => x.path_lo != null).map((x) => [new Date(`${x.month}-15`), x.path_lo, x.path_hi]);
-  const all = [...hist, ...model, ...ar].map((d) => d[1]).concat(band.flatMap((d) => [d[1], d[2]]));
-  const dates = [...hist, ...model].map((d) => d[0]);
-  if (!hist.length) return `<span class="muted small">history not shown (third-party data); <a href="${row.fred}" target="_blank" rel="noopener">FRED</a></span>`;
-  const x = d3.scaleTime().domain(d3.extent(dates)).range([pad, w - pad]);
-  const y = d3.scaleLinear().domain(d3.extent(all)).nice().range([h - pad, pad]);
-  const line = d3.line().x((d) => x(d[0])).y((d) => y(d[1]));
-  const area = d3.area().x((d) => x(d[0])).y0((d) => y(d[1])).y1((d) => y(d[2]));
-  const lastPt = hist[hist.length - 1];
-  return `<svg class="spark" width="${w}" height="${h}" role="img" aria-label="${row.name}: history and forecasts">
-    <title>${row.name}\nlatest ${MONTH(row.last_month)}: ${row.last.toLocaleString("en-US", { maximumFractionDigits: 2 })}</title>
-    <path d="${area([[lastPt[0], row.last, row.last], ...band])}" fill="${col("accent")}" opacity="0.15"/>
-    <path d="${line(hist)}" fill="none" stroke="${col("ink-2")}" stroke-width="1.3"/>
-    <path d="${line(ar)}" fill="none" stroke="${col("ink-3")}" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <path d="${line(model)}" fill="none" stroke="${col("accent")}" stroke-width="2"/>
-    <circle cx="${x(lastPt[0])}" cy="${y(row.last)}" r="2.5" fill="${col("ink")}"/>
-  </svg>`;
-}
-
 function forecasts(A, F) {
   const H = [0, 1, 3, 6, 12];
   const record = (r) => {

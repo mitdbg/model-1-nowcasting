@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   tabs(document.querySelector(".tabs"));
   try {
     const [g, m] = await Promise.all([SITE.data("nowcast_structure"), SITE.data("model1_structure")]);
+    const mv = document.getElementById("m1-vintage");
+    if (mv) mv.textContent = new Date(`${m.vintage}-15T12:00:00`).toLocaleDateString("en-US", { month: "long", year: "numeric" });
     gdpMatrix(g);
     // the economy-model charts need a visible container to measure their width
     const drawM1 = () => { if (!drawM1.done && !document.getElementById("m1").hidden) { drawM1.done = true; model1(m); } };

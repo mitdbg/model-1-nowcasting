@@ -163,7 +163,7 @@
   <details class="deep">
     <summary><span class="kicker">For economists</span>Size, estimation and testing</summary>
     <ul>
-      <li><strong>Economy model</strong>: 243 series (126 FRED-MD, 117 industry activity), 810 months (1959-03 to 2026-08, 17.5% of
+      <li><strong>Economy model</strong>: 243 series (126 FRED-MD, 117 industry activity), monthly from 1959-03 (about 17% of
         data points missing), 17 factors with 2 lags, a 277-element state and 2,306 estimated parameters.</li>
       <li><strong>Estimation</strong>: maximum likelihood by the EM algorithm with the Kalman filter and smoother
         (Bańbura and Modugno 2014), which handles missing values and ragged data edges directly.</li>
@@ -171,7 +171,7 @@
         10 interquartile ranges from the median treated as missing).</li>
       <li><strong>Choices</strong>: 4 general factors and 2 lags were chosen by forecast accuracy over 2000–2012 and then
         kept fixed, so the later test is not tuned to its own results. Industries get one factor each by design.</li>
-      <li><strong>Real-time test</strong>: every month from 2000-01 to 2026-09 (321 forecast dates), the model is fitted on the
+      <li><strong>Real-time test</strong>: every month from 2000-01 to the latest FRED-MD vintage, the model is fitted on the
         FRED-MD vintage of that month and forecasts 0 to 12 months ahead. Industry series use their ALFRED archives,
         which begin between 2010 and 2017. Industry scores on this page count only forecast dates after an industry's
         archives begin (for the economy model, after all 13 have begun, 2017-11), so every forecast uses data as first

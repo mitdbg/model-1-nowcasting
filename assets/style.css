@@ -215,3 +215,6 @@ details.update > summary { cursor: pointer; }
 .fc-key i { display: inline-block; width: 16px; height: 0; border-top: 2px solid; }
 .fc-table td:first-child { min-width: 200px; }
 .fc-table th, .fc-table td { padding-left: 7px; padding-right: 7px; }
+.mini-fc { font-size: 0.86rem; }
+.mini-fc td:first-child { min-width: 0; }
+.mini-fc th, .mini-fc td { padding: 5px 5px; }

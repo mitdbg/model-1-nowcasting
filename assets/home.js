@@ -8,7 +8,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     current(quarters.find((q) => q.advance == null) || quarters.at(-1));   // the earliest quarter BEA has not published
     miniGdp(quarters);
   } catch (e) { showError("now-chart", e); }
-  try { miniIndustries(await SITE.data("model1_accuracy")); } catch (e) { showError("mini-ind", e); }
+  try {
+    const [A, F] = await Promise.all([SITE.data("model1_accuracy"), SITE.data("industry_forecasts")]);
+    miniIndustries(A, F);
+  } catch (e) { showError("mini-ind", e); }
   try { seriesCount(await SITE.data("datasets")); } catch (e) { console.error(e); }
 });
 
@@ -70,21 +73,29 @@ function miniGdp(Q) {
   }));
 }
 
-function miniIndustries(A) {
-  const best = Object.entries(A.labels).map(([k, label]) => {
-    const rs = A.sectors.filter((r) => r.sector === k && r.horizon === 0 && r.span === "real-time"
-      && r.comparison === "S vs AR" && r.block !== "prices" && r.rel != null);
-    return { label, g: rs.length ? Math.round((1 - d3.median(rs, (r) => r.rel)) * 100) : null };
-  }).filter((r) => r.g != null).sort((a, b) => b.g - a.g);
-  mount("mini-ind", Plot.plot({
-    width: W("mini-ind"), height: 16 * best.length + 30, marginLeft: 120, marginRight: 40, style: PLOT_STYLE,
-    x: { label: null, ticks: 4, tickFormat: (v) => `${v}%` },
-    y: { domain: best.map((r) => r.label), label: null, tickSize: 0 },
-    marks: [
-      Plot.barX(best, { x: "g", y: "label", fill: (r) => (r.g > 0 ? col("good") : col("bad")), fillOpacity: 0.75, inset: 2.5 }),
-      Plot.text(best, { x: "g", y: "label", text: (r) => `${r.g > 0 ? "+" : ""}${r.g}%`, dx: 4, textAnchor: "start", fill: col("ink-2"), fontSize: 11,
-                         x: (r) => Math.max(r.g, 0) }),
-      Plot.ruleX([0], { stroke: col("ink-3") }),
-    ],
-  }));
+// The industry series the models have forecast best (one per industry), with their latest forecasts
+function miniIndustries(A, F) {
+  const record = (r) => {
+    const x = A.sectors.find((a) => a.sector === r.sector && a.target === r.target && a.horizon === 0
+      && a.span === "real-time" && a.comparison === r.comparison);
+    return x && x.rel != null ? Math.round((1 - x.rel) * 100) : null;
+  };
+  const seen = new Set();
+  const rows = F.rows.filter((r) => r.block === "activity" && r.history)
+    .map((r) => ({ ...r, record: record(r) })).filter((r) => r.record != null)
+    .sort((a, b) => b.record - a.record)
+    .filter((r) => !seen.has(r.sector) && seen.add(r.sector)).slice(0, 6);
+  const cell = (r, h) => {
+    const m = r.model.find((x) => x.h === h), a = r.ar.find((x) => x.h === h);
+    return `<td class="num" title="${MONTH(m.month)}"><span class="val">${fcValue(m, r.unit)}</span><span class="ar">AR ${fcValue(a, r.unit)}</span></td>`;
+  };
+  document.getElementById("mini-ind").innerHTML =
+    `<thead><tr><th>Series</th><th></th><th class="num">Now</th><th class="num">+3 mo</th></tr></thead><tbody>` +
+    rows.map((r) => `<tr><td><strong>${r.name}</strong><br><span class="muted small">${A.labels[r.sector]} · ${r.record > 0 ? "+" : ""}${r.record}% vs AR</span></td>
+      <td>${sparkline(r, 110, 32)}</td>${cell(r, 0)}${cell(r, 3)}</tr>`).join("") + "</tbody>";
+  document.getElementById("mini-ind-cap").innerHTML =
+    `Six of the series the industry models forecast best (one per industry): the last three years (grey), the model's
+    forecast (blue) and the AR benchmark's (dashed). Forecasts are the % change from the latest published value
+    (capacity utilization: the rate), on data through ${MONTH(F.vintage)}; "vs AR": how much smaller the model's
+    errors have been as a nowcast.`;
 }
