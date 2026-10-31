@@ -86,7 +86,7 @@ function miniIndustries(A, F) {
     return `<td class="num" title="${MONTH(m.month)}"><span class="val">${fcValue(m, r.unit)}</span><span class="ar">AR ${fcValue(a, r.unit)}</span></td>`;
   };
   document.getElementById("mini-ind").innerHTML =
-    `<thead><tr><th>Series</th><th></th><th class="num">Now</th><th class="num">+3 mo</th></tr></thead><tbody>` +
+    `<thead><tr><th>Series</th><th></th><th class="num">${hLabel(0)}</th><th class="num">${hLabel(3)}</th></tr></thead><tbody>` +
     rows.map((r) => `<tr><td><strong>${r.name}</strong><br><span class="muted small"><a href="model.html?m=IND-${r.sector.toUpperCase()}">${A.labels[r.sector]}</a> · ${r.record > 0 ? "+" : ""}${r.record}% vs AR</span></td>
       <td>${sparkline(r, 110, 32)}</td>${cell(r, 0)}${cell(r, 3)}</tr>`).join("") + "</tbody>";
   document.getElementById("mini-ind-cap").innerHTML =

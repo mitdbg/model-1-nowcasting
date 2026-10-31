@@ -60,7 +60,7 @@ function national(A) {
   const models = [["G", "General model"], ["G+AR", "General + AR"], ["Economy", "Economy model"], ["Economy+AR", "Economy + AR"], ["DI", "Diffusion index (DI)"]];
   const H = [0, 1, 3, 6, 12];
   const draw = () => {
-    let html = `<thead><tr><th>Indicator</th><th>Model</th>${H.map((h) => `<th class="num">h = ${h}</th>`).join("")}</tr></thead><tbody>`;
+    let html = `<thead><tr><th>Indicator</th><th>Model</th>${H.map((h) => `<th class="num">${hLabel(h)}</th>`).join("")}</tr></thead><tbody>`;
     for (const [t, name] of Object.entries(A.national_names)) {
       models.forEach(([m, label], i) => {
         html += `<tr>${i === 0 ? `<td rowspan="${models.length}"><strong>${name}</strong><br><span class="muted small">${t}</span></td>` : ""}<td>${label}</td>`;
@@ -115,6 +115,6 @@ function forecasts(A, F) {
   segmented(document.getElementById("fc-block"), (v) => { state.block = v; draw(); })("all");
   setSort("industry");
   document.getElementById("fc-note").innerHTML = fcKey() + `<br>
-    Track record: how much smaller the model's errors have been than the AR's as a nowcast (month 0), on data as first
+    Track record: how much smaller the model's errors have been than the AR's as a nowcast (0 months ahead), on data as first
     published; see <a href="#industries">Industry by industry</a>. Hover a forecast for its month and range, or a sparkline for the latest value.`;
 }

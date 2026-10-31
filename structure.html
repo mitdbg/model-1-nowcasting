@@ -40,7 +40,7 @@
     <a href="#production">In production</a>
     <a href="#reference">Reference models</a>
     <a href="#benchmarks">Benchmarks</a>
-    <a href="#factors">How the models work</a>
+    <a href="#factors">Factors</a>
   </nav>
 
   <h2 id="production">In production <span class="muted" id="prod-count"></span></h2>
@@ -59,7 +59,7 @@
     production models are measured against; their accuracy is on the <a href="industries.html#national">Industry
     models</a> page.</p></div>
   <h3 id="ind-g">IND-G <span class="muted">· general model</span></h3>
-  <div class="prose"><p>The 126 national monthly series of FRED-MD and 4 economy-wide factors. Every industry model is
+  <div class="prose"><p>The 126 national series (FRED-MD) and 4 economy-wide factors. Every industry model is
     this model plus one industry's series and two industry factors, so IND-G is the baseline for the question "does
     information about an industry help?" <a href="industries.html#national">Accuracy on national indicators →</a></p></div>
   <h3 id="ind-econ">IND-ECON <span class="muted">· economy model</span></h3>
@@ -76,14 +76,16 @@
     <tbody>
       <tr><td><strong>AR</strong></td><td>Autoregression: forecasts a series from its own recent past. Every model is
         scored against it ("% better than the AR").</td></tr>
-      <tr><td><strong>RW</strong></td><td>Random walk: no change from the latest value.</td></tr>
-      <tr><td><strong>DI</strong></td><td>The Stock–Watson diffusion-index forecast: a regression on principal-component factors.</td></tr>
-      <tr><td><strong>BR</strong></td><td>Bridge regression (general model only).</td></tr>
-      <tr><td><strong>NYFED</strong></td><td>The New York Fed's published Staff Nowcasts, 2016–2019, compared with GDP-2.</td></tr>
+      <tr><td><strong>RW</strong></td><td>Random walk: forecasts no change from the latest value.</td></tr>
+      <tr><td><strong>DI</strong></td><td>Diffusion index (Stock and Watson): forecasts a series from principal-component factors.</td></tr>
+      <tr><td><strong>BR</strong></td><td>Bridge regression: nowcasts a series from its own past and the month's weekly indicators;
+        scored for the general model only.</td></tr>
+      <tr><td><strong>NYFED</strong></td><td>New York Fed nowcasts: the Staff Nowcasts it published weekly in 2016–2019; scored
+        against GDP-2.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="factors">How the models work: factors</h2>
+  <h2 id="factors">Factors: how the models work</h2>
   <div class="prose">
     <p>Every model here explains many data series with a few hidden <strong>factors</strong>. Think of a factor as a
       hidden index, like an unpublished "state of the economy" number. Each data series is modeled as a mix of a few

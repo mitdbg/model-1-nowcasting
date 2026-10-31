@@ -263,9 +263,12 @@ function fcRow(r, sub = "") {
     <td class="num ${cls}" title="Errors as a nowcast, relative to the AR's, on data as first published">${g == null ? "–" : `${g > 0 ? "+" : ""}${g.toFixed(0)}%`}</td></tr>`;
 }
 
+// Column label of a horizon, months ahead (0 is the nowcast); the same on every table
+const hLabel = (h) => (h === 0 ? "0 (nowcast)" : `${h} mo`);
+
 const fcHead = (name = "<th>Series</th>", record = '<th class="num">Track<br>record</th>') =>
   `<thead><tr>${name}<th>History and forecast</th><th class="num">Latest</th>
-    ${FC_H.map((h) => `<th class="num">${h === 0 ? "0 (now)" : h}</th>`).join("")}${record}</tr></thead>`;
+    ${FC_H.map((h) => `<th class="num">${hLabel(h)}</th>`).join("")}${record}</tr></thead>`;
 
 const fcKey = (model = "industry model") =>
   `<span class="fc-key"><i style="border-color:${col("ink-2")}"></i>published data, last 3 years</span>` +

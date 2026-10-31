@@ -38,10 +38,10 @@
     public data.</p>
   <nav class="toc">
     <a href="#history">Every quarter, week by week</a>
-    <a href="#quarter">Explore one quarter</a>
-    <a href="#accuracy">How accurate is it?</a>
-    <a href="#ingredients">What makes it work</a>
-    <a href="#structure">Which series drive which factor</a>
+    <a href="#quarter">One quarter in detail</a>
+    <a href="#accuracy">Accuracy</a>
+    <a href="#ingredients">The features that matter</a>
+    <a href="#structure">Series and factors</a>
     <a href="#model">The model in detail</a>
   </nav>
 
@@ -79,7 +79,7 @@
   </figure>
   <p class="prose" id="hist-note"></p>
 
-  <h2 id="quarter">Explore one quarter</h2>
+  <h2 id="quarter">One quarter in detail</h2>
   <div class="controls">
     <label for="q-select">Quarter</label>
     <select id="q-select"></select>
@@ -107,7 +107,7 @@
     by a weight the model estimates for that series and release; the weight can be positive or negative.</p>
   <div class="table-wrap"><table id="q-top"></table></div>
 
-  <h2 id="accuracy">How accurate is it?</h2>
+  <h2 id="accuracy">Accuracy</h2>
   <div class="prose">
     <p>We score the nowcast by its <strong>mean squared error</strong> (MSE): the average of the squared
       misses, in percentage points of annualized growth. An MSE of 1.4 means a typical miss of about 1.2 points.
@@ -151,7 +151,7 @@
   <div class="table-wrap"><table id="acc-table"></table></div>
   <p class="small muted" id="acc-note"></p>
 
-  <h3>Against the nowcasts the New York Fed actually published</h3>
+  <h3>Comparison with the New York Fed's published nowcasts</h3>
   <div class="prose">
     <p>From 2016 to 2019 the New York Fed published its (older) model's nowcast every week. On the same dates,
       our replica had smaller errors against BEA's first estimate, with p-values near 0.05. Against the latest
@@ -160,7 +160,7 @@
   </div>
   <div class="table-wrap"><table id="h2h-table"></table></div>
 
-  <h2 id="ingredients">What makes it work</h2>
+  <h2 id="ingredients">The features that matter</h2>
   <div class="prose">
     <p>The 2.0 model adds four features to the older design. Switching each one off in turn shows which matter:
       a slowly drifting <strong>trend</strong> in long-run growth, and <strong>outlier scales</strong> that stop a
@@ -174,7 +174,7 @@
       Stochastic volatility mainly changes the error bands, not the nowcast itself.</figcaption>
   </figure>
 
-  <h2 id="structure">Which series drive which factor</h2>
+  <h2 id="structure">Series and factors</h2>
   <div class="prose">
     <p>GDP-2 has 35 series and six hidden components:</p>
     <ul>
@@ -193,9 +193,9 @@
 
   <h2 id="model">The model in detail</h2>
   <div class="prose">
-    <p>The model has four general factors (a <em>global</em> factor that every real-activity series loads on, and
+    <p>The model has four main factors (a <em>global</em> factor that every real-activity series loads on, and
       factors for <em>surveys</em>, <em>nominal</em> series such as prices and dollar values, and <em>labor</em>),
-      a factor that exists only during the 2020 pandemic, and a slowly moving trend in long-run growth. <a href="#structure">Which series drive which factor</a> shows the loadings.</p>
+      a factor that exists only during the 2020 pandemic, and a slowly moving trend in long-run growth. <a href="#structure">Series and factors</a> shows the loadings.</p>
   </div>
 
   <details class="deep">

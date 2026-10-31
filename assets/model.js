@@ -55,7 +55,7 @@ function forecastTable({ m, A, prices, label }, F) {
     <strong>0</strong> is the first month not yet published, and 1, 3, 6 and 12 are months after that.`;
   document.getElementById("m-fc").innerHTML = fcHead() + "<tbody>" + rows.map((r) => fcRow(r)).join("") + "</tbody>";
   document.getElementById("m-fc-note").innerHTML = fcKey(m.name) + `<br>Track record: how much smaller ${m.name}'s errors have
-    been than the AR's as a nowcast (month 0), on data as first published; see <a href="#accuracy">Accuracy</a>.`;
+    been than the AR's as a nowcast (0 months ahead), on data as first published; see <a href="#accuracy">Accuracy</a>.`;
 }
 
 // ------------------------------------------------------------------ accuracy
@@ -84,7 +84,7 @@ function accuracy({ m, I, A, prices, label }) {
     const g = gain(x.rel), cls = g >= 2 ? "good" : g <= -2 ? "bad" : "";
     return `<td class="num ${cls}" title="relative error ${fmt.n(x.rel, 3)}, p ${fmt.n(x.p, 2)}">${g > 0 ? "+" : ""}${g.toFixed(0)}%${x.p != null && x.p < 0.1 ? "*" : ""}</td>`;
   };
-  let html = `<thead><tr><th>Target</th><th>Model</th>${ACC_H.map((h) => `<th class="num">h = ${h}</th>`).join("")}</tr></thead><tbody>`;
+  let html = `<thead><tr><th>Target</th><th>Model</th>${ACC_H.map((h) => `<th class="num">${hLabel(h)}</th>`).join("")}</tr></thead><tbody>`;
   const r0 = (t) => own.find((r) => r.target === t);
   for (const t of targets.sort((a, b) => r0(a).name.localeCompare(r0(b).name))) {
     const lines = [[m.name, own]];
@@ -99,7 +99,7 @@ function accuracy({ m, I, A, prices, label }) {
   const econFrom = econ.length && econ[0].real_from ? MONTH(econ[0].real_from) : null;
   document.getElementById("m-acc-intro").innerHTML =
     `How much smaller ${m.name}'s forecast errors have been than the <strong>AR benchmark</strong>'s, target by target and
-    by months ahead (<strong>h</strong>; 0 is the nowcast). The test re-runs the model every month from ${from}, when every
+    by months ahead (0 is the nowcast). The test re-runs the model every month from ${from}, when every
     ${lower(label)} series has an archive of its past releases, using only the data published at each date.` +
     (prices ? ` Both the model and the AR forecast plain growth rates.`
             : econFrom ? ` For comparison, <a href="structure.html#ind-econ">IND-ECON</a>, the economy model, which estimates all 13 industries together (tested from ${econFrom}).` : "");

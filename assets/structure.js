@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const [M, m] = await Promise.all([SITE.data("models"), SITE.data("model1_structure")]);
     production(M);
     const mv = document.getElementById("m1-vintage");
-    if (mv) mv.textContent = new Date(`${m.vintage}-15T12:00:00`).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    if (mv) mv.textContent = MONTH(m.vintage);
     model1(m);
     if (location.hash === "#m1") document.getElementById("ind-econ").scrollIntoView();
   } catch (e) { showError("prod-ind", e); }

@@ -32,14 +32,14 @@
   <p class="lead">How the models are tested, what the scores mean, how this work relates to the models the Federal
     Reserve publishes, and what to be careful about.</p>
   <nav class="toc">
-    <a href="#realtime">Testing in real time</a>
-    <a href="#scores">Scoring accuracy</a>
+    <a href="#realtime">Real-time testing</a>
+    <a href="#scores">Accuracy scores</a>
     <a href="#related">Related work</a>
     <a href="#caveats">Caveats</a>
     <a href="#glossary">Glossary</a>
   </nav>
 
-  <h2 id="realtime">Testing in real time</h2>
+  <h2 id="realtime">Real-time testing</h2>
   <div class="prose">
     <p>Economic data are revised, often a lot. The first estimate of a month's payroll gain is routinely
       revised by tens of thousands of jobs, and GDP growth by a point or more. A model tested on today's revised data would look better than it could
@@ -76,7 +76,7 @@
     </ul>
   </div>
 
-  <h2 id="scores">Scoring accuracy</h2>
+  <h2 id="scores">Accuracy scores</h2>
   <div class="prose">
     <p><strong>Mean squared error (MSE)</strong> averages the squared forecast misses. Squaring makes large misses count more,
       and keeps positive and negative misses from cancelling. For GDP, the misses are in percentage points of annualized
@@ -88,7 +88,7 @@
     <p><strong>p-values</strong> come from Diebold–Mariano tests of whether two forecasts are equally accurate. A p-value
       below 0.05 means a difference that large would rarely arise by chance. With only a few recessions in the test
       periods, most differences between good models are not statistically significant.</p>
-    <p><strong>What counts as the truth</strong>: for GDP, BEA's first (advance) estimate, its third estimate, or the latest
+    <p><strong>What counts as the truth</strong>: for GDP, BEA's first estimate, its third estimate, or the latest
       revised figure; for monthly indicators, the first release or the latest vintage. Results can differ by truth: a
       model that predicts first releases well need not predict the revised figures as well.</p>
   </div>
@@ -158,7 +158,7 @@
       <tr><td><strong>Nowcast</strong></td><td>An estimate of the present or the very recent past, for a figure not yet published.</td></tr>
       <tr><td><strong>Factor</strong></td><td>A hidden variable that many data series move with, estimated from the data.</td></tr>
       <tr><td><strong>Loading</strong></td><td>How strongly a series moves with a factor.</td></tr>
-      <tr><td><strong>Advance estimate</strong></td><td>BEA's first estimate of a quarter's GDP, about a month after the quarter ends.</td></tr>
+      <tr><td><strong>First estimate</strong></td><td>BEA's first estimate of a quarter's GDP, about a month after the quarter ends (BEA calls it the advance estimate).</td></tr>
       <tr><td><strong>Vintage</strong></td><td>The version of a data set as it was published on a given date.</td></tr>
       <tr><td><strong>News</strong></td><td>The part of a data release the model did not expect: actual minus expected value.
         Each release moves the nowcast by its news times a weight.</td></tr>

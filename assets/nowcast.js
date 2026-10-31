@@ -167,11 +167,11 @@ function drawQuarter(q) {
         Plot.text([x], { x: (d) => d, text: () => t, frameAnchor: "top", dy: -20, dx, textAnchor: anchor,
                          fill: col("ink-3"), fontSize: 10, fontWeight: 600 })),
       Plot.rect(stacked, { x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "key", inset: 0.5, tip: true,
-                           title: (d) => `${d3.timeFormat("%b %d, %Y")(d.date)}\n${d.key}: ${fmt.signed(d.v, 2)} points` }),
+                           title: (d) => `${d3.timeFormat("%b %-d, %Y")(d.date)}\n${d.key}: ${fmt.signed(d.v, 2)} points` }),
       Plot.ruleY([0], { stroke: col("ink-3") }),
       Plot.lineY(level, { x: "date", y: (d) => toY(d.v), stroke: col("truth"), strokeWidth: 1.6 }),
       Plot.dot(level, { x: "date", y: (d) => toY(d.v), symbol: "diamond2", fill: col("truth"), r: 4, tip: true,
-                        title: (d) => `${d3.timeFormat("%b %d, %Y")(d.date)}\nnowcast ${fmt.n(d.v, 2)}%` }),
+                        title: (d) => `${d3.timeFormat("%b %-d, %Y")(d.date)}\nnowcast ${fmt.n(d.v, 2)}%` }),
     ],
   }));
 
@@ -190,7 +190,7 @@ function drawQuarter(q) {
   const body = el("tbody");
   q.top.forEach((r) => body.append(el("tr", { html:
     `<td>${fmt.date(r.date)}</td><td>${names[r.series] || r.series} <span class="tag">${CAT_LABEL[r.category] || r.category}</span></td>
-     <td>${r.month}</td><td class="num">${fmt.n(r.actual, 2)}</td><td class="num">${fmt.n(r.expected, 2)}</td>
+     <td>${MONTH(r.month)}</td><td class="num">${fmt.n(r.actual, 2)}</td><td class="num">${fmt.n(r.expected, 2)}</td>
      <td class="num ${r.impact > 0 ? "good" : "bad"}">${fmt.signed(r.impact, 2)}</td>` })));
   t.append(body);
 }
@@ -332,7 +332,7 @@ function shares(D) {
 
 function gdpMatrix(S) {
   document.getElementById("gdp-fit").textContent =
-    `Fit of ${S.fit_date}, on ${S.months} months of data from ${S.start}.`;
+    `Fit of ${fmt.date(S.fit_date)}, on ${S.months} months of data from ${MONTH(S.start)}.`;
   const cols = [["trend", "Trend"], ["global", "Global"], ["soft", "Soft"], ["nominal", "Nominal"], ["labor", "Labor"], ["covid", "COVID"]];
   // scale bars by a high quantile so a few large loadings do not shrink the rest to dots
   const maxL = d3.quantile(S.series.flatMap((s) => Object.values(s.loadings).map(Math.abs)), 0.95);

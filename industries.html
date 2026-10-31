@@ -74,19 +74,18 @@
     <thead><tr><th>Model</th><th>Data</th><th>Factors</th><th>The question it answers</th><th>Results</th></tr></thead>
     <tbody>
       <tr><td><strong>General model</strong> <a href="structure.html#ind-g">IND-G</a><br><span class="muted small">the baseline · reference</span></td>
-        <td>About 126 national monthly series (the FRED-MD data set)</td>
+        <td>The 126 national series (FRED-MD)</td>
         <td>4 economy-wide factors</td><td>Do economy-wide factors forecast better than a simple benchmark?</td>
         <td><a href="#national">National indicators</a></td></tr>
       <tr><td><strong>Industry models</strong> IND-&lt;INDUSTRY&gt;, IND-&lt;INDUSTRY&gt;-P5<br><span class="muted small">13 separate models, one per industry, each in an activity and a price version · production</span></td>
-        <td>The general data plus 9–19 series from one industry</td>
+        <td>The 126 national series plus 9–19 series from one industry</td>
         <td>The 4 economy-wide factors plus 2 for the industry: its activity and its prices</td>
         <td>Does information about an industry improve forecasts for that industry?</td>
-        <td><a href="#industries">Industry by industry</a>; <a href="#explore">one page per model</a></td></tr>
+        <td><a href="#industries">Industry by industry</a> · <a href="#explore">One page per model</a></td></tr>
       <tr><td><strong>Economy model</strong> <a href="structure.html#ind-econ">IND-ECON</a><br><span class="muted small">one model, all 13 industries at once · reference</span></td>
-        <td>The general data plus the activity series of all 13 industries (243 series)</td>
+        <td>The 126 national series plus the activity series of all 13 industries (243 series)</td>
         <td>4 economy-wide factors plus 13 industry factors</td><td>Do industry factors improve the national forecasts?</td>
-        <td><a href="#national">National indicators</a>; its factors over time are on
-          <a href="structure.html#ind-econ">Models</a></td></tr>
+        <td><a href="#national">National indicators</a> · <a href="structure.html#ind-econ">Factors over time</a></td></tr>
     </tbody>
   </table></div>
   <div class="callout">
@@ -101,7 +100,7 @@
   <div class="prose"><p>Each industry model forecasts its own industry's series. Each dot below is one of those series.</p></div>
   <div class="controls">
     <label>Months ahead</label>
-    <div class="seg" id="ind-h"><button value="0">0 (nowcast)</button><button value="1">1</button><button value="3">3</button><button value="6">6</button></div>
+    <div class="seg" id="ind-h"><button value="0">0 (nowcast)</button><button value="1">1 mo</button><button value="3">3 mo</button><button value="6">6 mo</button></div>
     <label>Series</label>
     <div class="seg" id="ind-block"><button value="activity">Activity</button><button value="prices">Prices</button></div>
   </div>
@@ -148,8 +147,8 @@
     $$f_t = A_1 f_{t-1} + A_2 f_{t-2} + u_t, \qquad f_t = (g_t', s_t')', \qquad u_t \sim N(0, Q)$$
     $$e_{it} = \rho_i\, e_{i,t-1} + \varepsilon_{it}, \qquad \varepsilon_{it} \sim N(0, \sigma_i^2)$$
     <ul>
-      <li>\(g_t\): the 4 general factors; \(s_{k,t}\): the factor of industry \(k\).</li>
-      <li>Loadings are restricted: FRED-MD series load only on the general factors; an industry series loads on those
+      <li>\(g_t\): the 4 economy-wide factors; \(s_{k,t}\): the factor of industry \(k\).</li>
+      <li>Loadings are restricted: national series load only on the economy-wide factors; an industry series loads on those
         and on its own industry's factor.</li>
       <li>The industry models have the same form with 6 factors: the 4 general ones plus an industry activity factor
         and an industry price factor.</li>
@@ -158,18 +157,18 @@
   <details class="deep">
     <summary><span class="kicker">For economists</span>Size, estimation and testing</summary>
     <ul>
-      <li><strong>Economy model</strong>: 243 series (126 FRED-MD, 117 industry activity), monthly from 1959-03 (about 17% of
+      <li><strong>Economy model</strong>: 243 series (126 FRED-MD, 117 industry activity), monthly from Mar 1959 (about 17% of
         data points missing), 17 factors with 2 lags, a 277-element state and 2,306 estimated parameters.</li>
       <li><strong>Estimation</strong>: maximum likelihood by the EM algorithm with the Kalman filter and smoother
         (Bańbura and Modugno 2014), which handles missing values and ragged data edges directly.</li>
       <li><strong>Data handling</strong>: FRED-MD's transformation codes and the McCracken–Ng outlier rule (values more than
         10 interquartile ranges from the median treated as missing).</li>
-      <li><strong>Choices</strong>: 4 general factors and 2 lags were chosen by forecast accuracy over 2000–2012 and then
+      <li><strong>Choices</strong>: 4 economy-wide factors and 2 lags were chosen by forecast accuracy over 2000–2012 and then
         kept fixed, so the later test is not tuned to its own results. Industries get one factor each by design.</li>
-      <li><strong>Real-time test</strong>: every month from 2000-01 to the latest FRED-MD vintage, the model is fitted on the
+      <li><strong>Real-time test</strong>: every month from Jan 2000 to the latest FRED-MD vintage, the model is fitted on the
         FRED-MD vintage of that month and forecasts 0 to 12 months ahead. Industry series use their ALFRED archives,
         which begin between 2010 and 2017. Industry scores on this page count only forecast dates after an industry's
-        archives begin (for the economy model, after all 13 have begun, 2017-11), so every forecast uses data as first
+        archives begin (for the economy model, after all 13 have begun, Nov 2017), so every forecast uses data as first
         published. Industry models are re-fitted every third month.</li>
       <li><strong>Scores</strong>: root mean squared error relative to the AR, on cumulative changes; Diebold–Mariano tests
         with the Harvey–Leybourne–Newbold correction for p-values.</li>
