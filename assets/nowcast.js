@@ -142,7 +142,9 @@ function drawQuarter(q) {
   const toY = (v) => ylo + (v - a) / (b - a) * (yhi - ylo), fromY = (y) => a + (y - ylo) / (yhi - ylo) * (b - a);
   const rightTicks = d3.ticks(a, b, 5).map(toY);
   const bnd = quarterBounds(q);
-  const xdom = [d3.min([level[0].date, bnd.start]) - HALF, d3.max([level.at(-1).date, bnd.end]) + HALF];
+  const xdom = [+d3.min([level[0].date, bnd.start]) - HALF, +d3.max([level.at(-1).date, bnd.end]) + HALF];
+  const future = bnd.expected && +level.at(-1).date + HALF < xdom[1]
+    ? { from: new Date(+level.at(-1).date + HALF), to: new Date(xdom[1]), release: bnd.release } : null;
   mount("q-news", Plot.plot({
     width: W("q-news"), height: 300, marginTop: 34, marginLeft: 44, marginRight: 52, style: PLOT_STYLE,
     x: { type: "time", label: null, domain: xdom.map((t) => new Date(t)) },
@@ -154,9 +156,16 @@ function drawQuarter(q) {
                    tickSize: 0, tickPadding: 6 }),
       Plot.axisY(rightTicks, { anchor: "right", tickFormat: (y) => `${fmt.n(fromY(y), 1)}%`, label: "nowcast, % a year",
                                labelAnchor: "center", labelArrow: "none", tickSize: 0, tickPadding: 6, color: col("truth") }),
+      // a quarter still being tracked: the weeks after the latest nowcast have not happened yet
+      ...(future ? [
+        Plot.rect([future], { x1: (f) => f.from, x2: (f) => f.to, y1: ylo, y2: yhi, fill: col("surface") }),
+        Plot.text([future], { x: (f) => new Date((+f.from + +f.to) / 2), frameAnchor: "top", dy: 22, fill: col("ink-3"), fontSize: 11,
+          lineWidth: 16, text: (f) => `Weeks still to come: the nowcast updates every Friday until BEA's first estimate (${d3.timeFormat("%b %-d")(f.release)})` }),
+      ] : []),
       Plot.ruleX([bnd.start, bnd.end], { stroke: col("ink-3"), strokeDasharray: "3 3" }),
-      Plot.text([[bnd.start, "START OF QUARTER"], [bnd.end, "END OF QUARTER"]], { x: (d) => d[0], text: (d) => d[1], frameAnchor: "top",
-        dy: -20, dx: 3, textAnchor: "start", fill: col("ink-3"), fontSize: 10, fontWeight: 600 }),
+      ...[[bnd.start, "START OF QUARTER", "start", 3], [bnd.end, "END OF QUARTER", "end", -3]].map(([x, t, anchor, dx]) =>
+        Plot.text([x], { x: (d) => d, text: () => t, frameAnchor: "top", dy: -20, dx, textAnchor: anchor,
+                         fill: col("ink-3"), fontSize: 10, fontWeight: 600 })),
       Plot.rect(stacked, { x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "key", inset: 0.5, tip: true,
                            title: (d) => `${d3.timeFormat("%b %d, %Y")(d.date)}\n${d.key}: ${fmt.signed(d.v, 2)} points` }),
       Plot.ruleY([0], { stroke: col("ink-3") }),
