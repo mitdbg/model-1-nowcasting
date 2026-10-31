@@ -11,11 +11,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 const gain = (rel) => Math.round((1 - rel) * 1000) / 10;
 
 function overview(A) {
-  const state = { h: 0, span: "real-time", block: "activity" };
+  const state = { h: 0, block: "activity" };
   const sectors = Object.keys(A.labels);
   const draw = () => {
     const comparison = state.block === "prices" ? "S-t5 vs AR-t5" : "S vs AR";
-    const rows = A.sectors.filter((r) => r.sector !== "economy" && r.horizon === state.h && r.span === state.span
+    const rows = A.sectors.filter((r) => r.sector !== "economy" && r.horizon === state.h && r.span === "real-time"
       && r.comparison === comparison && (state.block === "prices" ? r.block === "prices" : r.block !== "prices"))
       .map((r) => ({ ...r, label: A.labels[r.sector], g: gain(r.rel) }));
     const better = rows.filter((r) => r.g > 0).length;
@@ -36,16 +36,14 @@ function overview(A) {
       ],
     }));
     document.getElementById("ind-caption").textContent =
-      (state.span === "real-time" ? "Only forecast dates from when every series of the industry has an archive of its past releases. "
-        : "All forecast dates, 2000–2026; before an industry's archives begin, its data are pseudo-real-time. ") +
-      "Diamonds: the difference from the AR is significant at 10%. " +
+      "Tested only from the date when every series of the industry has an archive of its past releases (2010–2017, by industry), " +
+      "so each forecast uses the data as they were first published. Diamonds: the difference from the AR is significant at 10%. " +
       (state.block === "prices" ? "Price targets use the plain growth rate for both the model and the AR." : "");
   };
   const hSet = segmented(document.getElementById("ind-h"), (v) => { state.h = +v; draw(); });
-  const sSet = segmented(document.getElementById("ind-span"), (v) => { state.span = v; draw(); });
   segmented(document.getElementById("ind-block"), (v) => { state.block = v; draw(); });
   document.querySelector('#ind-block button[value="activity"]').setAttribute("aria-pressed", "true");
-  state.block = "activity"; sSet("real-time"); hSet("0");
+  state.block = "activity"; hSet("0");
 }
 
 function explorer(A) {
@@ -63,18 +61,18 @@ function explorer(A) {
       const g = gain(x.rel), cls = g >= 2 ? "good" : g <= -2 ? "bad" : "";
       return `<td class="num ${cls}" title="relative error ${fmt.n(x.rel, 3)}, p ${fmt.n(x.p, 2)}">${g > 0 ? "+" : ""}${g.toFixed(0)}%${x.p != null && x.p < 0.1 ? "*" : ""}</td>`;
     };
-    let html = `<thead><tr><th>Target</th><th>Model and test</th>${H.map((h) => `<th class="num">h = ${h}</th>`).join("")}</tr></thead><tbody>`;
+    let html = `<thead><tr><th>Target</th><th>Model</th>${H.map((h) => `<th class="num">h = ${h}</th>`).join("")}</tr></thead><tbody>`;
     for (const t of targets) {
       const r0 = own.find((r) => r.target === t);
       const isPrice = r0.block === "prices";
       const cmp = isPrice ? "S-t5 vs AR-t5" : "S vs AR";
-      const lines = [["Industry model, real-time data", own, "real-time", cmp], ["Industry model, 2000–2026", own, "all", cmp]];
-      if (!isPrice && econ.some((r) => r.target === t)) lines.push(["Economy model, 2000–2026", econ, "all", "S vs AR"]);
+      const lines = [["Industry model", own, "real-time", cmp]];
+      if (!isPrice && econ.some((r) => r.target === t)) lines.push([`Economy model <span class="muted small">· tested from ${econ[0].real_from}</span>`, econ, "real-time", "S vs AR"]);
       const has = (l) => H.some((h) => { const x = cell(l[1], t, h, l[2], l[3]); return x && x.rel != null; });
       lines.splice(0, lines.length, ...lines.filter(has));
       if (!lines.length) continue;
       lines.forEach(([label, rows, span, c], i) => {
-        html += `<tr>${i === 0 ? `<td rowspan="${lines.length}"><strong>${r0.name}</strong><br><span class="muted small">${t} · ${r0.block}${r0.real_from ? ` · real-time from ${r0.real_from}` : ""}</span></td>` : ""}
+        html += `<tr>${i === 0 ? `<td rowspan="${lines.length}"><strong>${r0.name}</strong><br><span class="muted small">${t} · ${r0.block}${r0.real_from ? ` · tested from ${r0.real_from}` : ""}</span></td>` : ""}
           <td>${label}</td>${H.map((h) => td(cell(rows, t, h, span, c))).join("")}</tr>`;
       });
     }

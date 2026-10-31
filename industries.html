@@ -90,8 +90,6 @@
   <div class="controls">
     <label>Months ahead</label>
     <div class="seg" id="ind-h"><button value="0">0 (nowcast)</button><button value="1">1</button><button value="3">3</button><button value="6">6</button></div>
-    <label>Test period</label>
-    <div class="seg" id="ind-span"><button value="real-time">Real-time data only</button><button value="all">2000–2026</button></div>
     <label>Series</label>
     <div class="seg" id="ind-block"><button value="activity">Activity</button><button value="prices">Prices</button></div>
   </div>
@@ -162,9 +160,10 @@
       <li><strong>Choices</strong>: 4 general factors and 2 lags were chosen by forecast accuracy over 2000–2012 and then
         kept fixed, so the later test is not tuned to its own results. Industries get one factor each by design.</li>
       <li><strong>Real-time test</strong>: every month from 2000-01 to 2026-09 (321 forecast dates), the model is fitted on the
-        FRED-MD vintage of that month and forecasts 0 to 12 months ahead. Industry series use their ALFRED archives
-        (which begin between 2010 and 2017); before that, current data are cut off at each date ("pseudo-real-time").
-        Industry models are re-fitted every third month.</li>
+        FRED-MD vintage of that month and forecasts 0 to 12 months ahead. Industry series use their ALFRED archives,
+        which begin between 2010 and 2017. Industry scores on this page count only forecast dates after an industry's
+        archives begin (for the economy model, after all 13 have begun, 2017-11), so every forecast uses data as first
+        published. Industry models are re-fitted every third month.</li>
       <li><strong>Scores</strong>: root mean squared error relative to the AR, on cumulative changes; Diebold–Mariano tests
         with the Harvey–Leybourne–Newbold correction for p-values.</li>
       <li><strong>Prices</strong>: with FRED-MD's default transformation (change in the growth rate), industry price forecasts
